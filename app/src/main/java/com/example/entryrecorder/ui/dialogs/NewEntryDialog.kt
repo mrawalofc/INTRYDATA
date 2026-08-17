@@ -37,6 +37,7 @@ import java.util.Locale
 fun NewEntryDialog(
     viewModel: EntryViewModel,
     onDismiss: () -> Unit,
+    onEntrySaved: ((com.example.entryrecorder.model.EntryRecord) -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
     val todayStr = remember {
@@ -600,12 +601,16 @@ fun NewEntryDialog(
                                 applicationName = selectedApplication,
                                 ageCode = ageCodeInput,
                                 amount = parsedAmount,
-                                comment = commentInput
-                            ) { success, _ ->
-                                if (success) {
-                                    onDismiss()
+                                comment = commentInput,
+                                onComplete = { success, _ ->
+                                    if (success) {
+                                        onDismiss()
+                                    }
+                                },
+                                onRecordCreated = { createdRecord ->
+                                    onEntrySaved?.invoke(createdRecord)
                                 }
-                            }
+                            )
                         },
                         modifier = Modifier
                             .fillMaxWidth()
@@ -614,10 +619,10 @@ fun NewEntryDialog(
                         colors = ButtonDefaults.buttonColors(containerColor = SuccessGreen),
                         shape = RoundedCornerShape(10.dp)
                     ) {
-                        Icon(Icons.Default.Save, contentDescription = null, tint = Color.White)
+                        Icon(Icons.Default.Receipt, contentDescription = null, tint = Color.White)
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
-                            text = "Save Entry & Generate Invoice",
+                            text = "Save & Preview Invoice",
                             style = MaterialTheme.typography.titleMedium.copy(
                                 fontWeight = FontWeight.Bold,
                                 color = Color.White

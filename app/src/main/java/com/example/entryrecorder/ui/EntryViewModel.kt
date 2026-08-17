@@ -374,7 +374,8 @@ class EntryViewModel(application: Application) : AndroidViewModel(application) {
         amount: Double,
         requestNo: String = "",
         comment: String = "",
-        onComplete: (Boolean, String) -> Unit
+        onComplete: (Boolean, String) -> Unit = { _, _ -> },
+        onRecordCreated: ((EntryRecord) -> Unit)? = null
     ) {
         viewModelScope.launch {
             try {
@@ -406,6 +407,7 @@ class EntryViewModel(application: Application) : AndroidViewModel(application) {
                 repository.insertRecord(newRecord)
                 emitToast("Entry Saved! Invoice: $nextInvoice")
                 onComplete(true, nextInvoice)
+                onRecordCreated?.invoke(newRecord)
 
                 // Background sync
                 triggerSync(false)

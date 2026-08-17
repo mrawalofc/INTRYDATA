@@ -33,6 +33,14 @@ import com.example.entryrecorder.ui.dialogs.QuickEditRecordDialog
 import com.example.entryrecorder.ui.theme.*
 import java.util.Calendar
 import java.util.Locale
+import java.text.SimpleDateFormat
+import java.util.Date
+import com.patrykandpatrick.vico.compose.axis.horizontal.rememberBottomAxis
+import com.patrykandpatrick.vico.compose.axis.vertical.rememberStartAxis
+import com.patrykandpatrick.vico.compose.chart.Chart
+import com.patrykandpatrick.vico.compose.chart.line.lineChart
+import com.patrykandpatrick.vico.core.entry.entryModelOf
+import com.patrykandpatrick.vico.core.entry.FloatEntry
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -45,12 +53,46 @@ fun DashboardScreen(
     val syncState by viewModel.syncState.collectAsStateWithLifecycle()
     val stats by viewModel.dashboardStats.collectAsStateWithLifecycle()
     val records by viewModel.filteredRecords.collectAsStateWithLifecycle()
+    val rawRecords by viewModel.rawRecords.collectAsStateWithLifecycle()
     val searchQuery by viewModel.searchQuery.collectAsStateWithLifecycle()
     val filterColumn by viewModel.filterColumn.collectAsStateWithLifecycle()
     val sortColumn by viewModel.sortColumn.collectAsStateWithLifecycle()
     val sortAscending by viewModel.sortAscending.collectAsStateWithLifecycle()
     val startDateFilter by viewModel.startDateFilter.collectAsStateWithLifecycle()
     val endDateFilter by viewModel.endDateFilter.collectAsStateWithLifecycle()
+
+    val chartData = remember(rawRecords) {
+        val today = Calendar.getInstance()
+        val currentYear = today.get(Calendar.YEAR)
+        val currentMonth = today.get(Calendar.MONTH) + 1
+        val daysInMonth = today.getActualMaximum(Calendar.DAY_OF_MONTH)
+        
+        val prefix = String.format(Locale.getDefault(), "%04d-%02d", currentYear, currentMonth)
+        
+        val dataPoints = FloatArray(daysInMonth) { 0f }
+        
+        rawRecords.forEach { record ->
+            if (record.date.startsWith(prefix)) {
+                try {
+                    val dayStr = record.date.split("-").getOrNull(2)
+                    if (dayStr != null) {
+                        val day = dayStr.toInt()
+                        if (day in 1..daysInMonth) {
+                            dataPoints[day - 1] += record.amount.toFloat()
+                        }
+                    }
+                } catch (e: Exception) {
+                    // Ignore parsing errors
+                }
+            }
+        }
+        
+        val entries = dataPoints.mapIndexed { index, amount ->
+            FloatEntry(x = (index + 1).toFloat(), y = amount)
+        }
+        
+        entries
+    }
 
     var showNewEntryDialog by remember { mutableStateOf(false) }
     var selectedInvoiceRecord by remember { mutableStateOf<EntryRecord?>(null) }
@@ -128,6 +170,67 @@ fun DashboardScreen(
                     stats = stats,
                     isAdmin = isAdmin
                 )
+            }
+
+            // Daily Revenue Chart
+            item {
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(12.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color.White),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp)
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.padding(bottom = 16.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Timeline,
+                                contentDescription = null,
+                                tint = PrimaryBlue,
+                                modifier = Modifier.size(24.dp)
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(
+                                text = "Daily Revenue (Current Month)",
+                                style = MaterialTheme.typography.titleMedium.copy(
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color(0xFF1F2937)
+                                )
+                            )
+                        }
+
+                        if (chartData.isNotEmpty()) {
+                            Chart(
+                                chart = lineChart(),
+                                model = entryModelOf(chartData),
+                                startAxis = rememberStartAxis(
+                                    valueFormatter = { value, _ -> "\$${value.toInt()}" }
+                                ),
+                                bottomAxis = rememberBottomAxis(
+                                    valueFormatter = { value, _ -> value.toInt().toString() }
+                                ),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(200.dp)
+                            )
+                        } else {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(200.dp),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text("No data available", color = Color.Gray)
+                            }
+                        }
+                    }
+                }
             }
 
             // Add New Entry Button (Top)
@@ -677,7 +780,10 @@ fun DashboardScreen(
     if (showNewEntryDialog) {
         NewEntryDialog(
             viewModel = viewModel,
-            onDismiss = { showNewEntryDialog = false }
+            onDismiss = { showNewEntryDialog = false },
+            onEntrySaved = { createdRecord ->
+                selectedInvoiceRecord = createdRecord
+            }
         )
     }
 

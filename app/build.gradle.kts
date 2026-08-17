@@ -72,4 +72,8 @@ dependencies {
     implementation(libs.zxing.core)
     implementation(libs.okhttp)
     implementation(libs.kotlinx.serialization.json)
+
+    implementation(libs.vico.compose)
+    implementation(libs.vico.compose.m3)
+    implementation(libs.vico.core)
 }

@@ -7,6 +7,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
 :root{--primary:#2563eb;--primary-dark:#1d4ed8;--primary-light:#dbeafe;--success:#059669;--success-light:#d1fae5;--danger:#dc2626;--danger-light:#fee2e2;--warning:#d97706;--warning-light:#fef3c7;--admin:#7c3aed;--admin-light:#ede9fe;--gray-50:#f9fafb;--gray-100:#f3f4f6;--gray-200:#e5e7eb;--gray-300:#d1d5db;--gray-400:#9ca3af;--gray-500:#6b7280;--gray-600:#4b5563;--gray-700:#374151;--gray-800:#1f2937;--gray-900:#111827;--shadow:0 1px 3px 0 rgba(0,0,0,0.1),0 1px 2px -1px rgba(0,0,0,0.1);--shadow-md:0 4px 6px -1px rgba(0,0,0,0.1),0 2px 4px -2px rgba(0,0,0,0.1);--shadow-lg:0 10px 15px -3px rgba(0,0,0,0.1),0 4px 6px -4px rgba(0,0,0,0.1);--radius:8px;--radius-lg:12px}
 *{margin:0;padding:0;box-sizing:border-box}
@@ -125,6 +126,39 @@ tbody tr:nth-child(even):hover{background:var(--primary-light)}
 .date-cell{white-space:nowrap;color:var(--gray-600);font-weight:500}
 .amount-cell{font-weight:600;color:var(--success);text-align:right}
 .invoice-cell{font-weight:600;color:var(--admin);font-family:monospace}
+.badge-invoice{background:#ede9fe;color:#6d28d9;padding:4px 10px;border-radius:6px;font-weight:700;font-family:monospace;font-size:0.8125rem;display:inline-flex;align-items:center;gap:5px;cursor:pointer;border:1px solid #ddd6fe;transition:all .2s;text-decoration:none}
+.badge-invoice:hover{background:#ddd6fe;color:#5b21b6;transform:translateY(-1px);box-shadow:var(--shadow)}
+.btn-invoice-row{background:none;border:none;color:#7c3aed;cursor:pointer;padding:6px;border-radius:6px;transition:all .2s;font-size:1rem;margin-right:2px}
+.btn-invoice-row:hover{background:#ede9fe;color:#5b21b6}
+
+/* Invoice Print Preview Modal */
+.invoice-modal-overlay{position:fixed;inset:0;background:rgba(15,23,42,0.75);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;z-index:4500;padding:16px}
+.invoice-modal-overlay.active{display:flex}
+.invoice-modal-container{background:#ffffff;border-radius:var(--radius-lg);box-shadow:0 25px 50px -12px rgba(0,0,0,0.25);width:100%;max-width:540px;max-height:92vh;display:flex;flex-direction:column;overflow:hidden;animation:modalIn .25s ease}
+.invoice-modal-header{background:linear-gradient(135deg,#1e40af 0%,#1d4ed8 100%);color:white;padding:16px 20px;display:flex;align-items:center;justify-content:space-between}
+.invoice-modal-header h3{font-size:1.15rem;font-weight:700;display:flex;align-items:center;gap:8px}
+.invoice-modal-scroll{padding:20px;overflow-y:auto;flex:1;background:#f8fafc}
+.invoice-receipt-card{background:#ffffff;border:1px solid #e2e8f0;border-radius:12px;padding:24px;box-shadow:var(--shadow)}
+.invoice-receipt-header{text-align:center;border-bottom:2px solid #2563eb;padding-bottom:16px;margin-bottom:18px}
+.invoice-logo-icon{width:52px;height:52px;background:#dbeafe;color:#2563eb;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:1.6rem;margin-bottom:8px}
+.invoice-receipt-title{font-size:1.4rem;font-weight:800;color:#1e3a8a;letter-spacing:.5px;text-transform:uppercase}
+.invoice-receipt-subtitle{font-size:.8125rem;color:#64748b;margin-top:2px;font-weight:500}
+.invoice-number-tag{display:inline-block;background:#eff6ff;color:#1d4ed8;border:1.5px dashed #3b82f6;padding:6px 16px;border-radius:8px;font-size:1rem;font-weight:700;font-family:monospace;margin-top:12px;letter-spacing:1px}
+.invoice-table-details{width:100%;border-collapse:collapse;margin-top:8px}
+.invoice-table-details tr{border-bottom:1px solid #f1f5f9}
+.invoice-table-details td{padding:10px 6px;font-size:.875rem}
+.invoice-table-details .td-label{color:#64748b;font-weight:600;width:40%}
+.invoice-table-details .td-val{color:#0f172a;font-weight:500;text-align:right}
+.invoice-amount-box{margin-top:18px;background:#f0fdf4;border:1.5px solid #86efac;border-radius:10px;padding:14px 18px;display:flex;justify-content:space-between;align-items:center}
+.invoice-amount-box .lbl{font-size:.9375rem;font-weight:700;color:#166534}
+.invoice-amount-box .val{font-size:1.35rem;font-weight:800;color:#15803d}
+.invoice-receipt-footer{margin-top:20px;text-align:center;font-size:.8125rem;color:#94a3b8;border-top:1px dashed #e2e8f0;padding-top:14px;font-style:italic}
+.invoice-modal-footer{background:#f1f5f9;border-top:1px solid #e2e8f0;padding:14px 20px;display:flex;gap:10px;justify-content:flex-end}
+.btn-invoice-print{background:linear-gradient(135deg,#2563eb 0%,#1d4ed8 100%);color:white;border:none;padding:10px 18px;border-radius:8px;font-weight:600;font-size:.9375rem;cursor:pointer;display:inline-flex;align-items:center;gap:8px;box-shadow:0 2px 4px rgba(37,99,235,.2)}
+.btn-invoice-print:hover{background:#1e40af}
+.btn-invoice-share{background:white;border:1.5px solid #cbd5e1;color:#334155;padding:10px 16px;border-radius:8px;font-weight:600;font-size:.9375rem;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+.btn-invoice-share:hover{background:#f8fafc;border-color:#94a3b8}
+
 .creator-cell{white-space:nowrap;font-size:.8125rem;color:var(--gray-500)}
 .actions-cell{width:80px;text-align:center}
 .btn-delete-row{background:none;border:none;color:var(--gray-400);cursor:pointer;padding:6px;border-radius:6px;transition:all .2s;font-size:1rem}
@@ -226,69 +260,35 @@ tbody tr:nth-child(even):hover{background:var(--primary-light)}
   body {
     background: #ffffff !important;
     color: #111827 !important;
-    min-height: auto !important;
+    margin: 0 !important;
     padding: 0 !important;
-    margin: 0 !important;
+    min-height: auto !important;
   }
-  .login-screen,
-  .app-header,
-  .admin-panel,
-  .stats-bar,
-  .add-new-bar,
-  .add-new-bar-bottom,
-  .list-toolbar,
-  .instructions-card,
-  .modal-overlay,
-  .modal-overlay-entry,
-  .toast-container,
-  .btn-print-header,
-  .actions-cell,
-  #thAction,
-  .btn-delete-row {
-    display: none !important;
+  
+  body * {
+    visibility: hidden !important;
   }
-  .app-container {
-    max-width: 100% !important;
-    margin: 0 !important;
-    padding: 10px !important;
+  
+  #printableInvoiceCard, #printableInvoiceCard * {
+    visibility: visible !important;
   }
-  .list-card {
-    box-shadow: none !important;
-    border: 1px solid #d1d5db !important;
-    border-radius: 0 !important;
-    overflow: visible !important;
-  }
-  .list-card-header {
-    background: #1e293b !important;
-    color: #ffffff !important;
-    -webkit-print-color-adjust: exact !important;
-    print-color-adjust: exact !important;
-    padding: 12px 16px !important;
-  }
-  .table-wrapper {
-    max-height: none !important;
-    overflow: visible !important;
-  }
-  table {
-    font-size: 8.5pt !important;
+  
+  #printableInvoiceCard {
+    position: absolute !important;
+    left: 0 !important;
+    top: 0 !important;
+    margin: 0 auto !important;
+    padding: 0 !important;
     width: 100% !important;
-    border-collapse: collapse !important;
+    max-width: 480px !important;
+    box-shadow: none !important;
+    border: none !important;
   }
-  th, td {
-    padding: 6px 8px !important;
-    border: 1px solid #e5e7eb !important;
-  }
-  th {
-    background-color: #f3f4f6 !important;
-    color: #111827 !important;
-    -webkit-print-color-adjust: exact !important;
-    print-color-adjust: exact !important;
-  }
-  th i {
-    display: none !important;
-  }
-  tr {
-    page-break-inside: avoid !important;
+  
+  .invoice-receipt-card {
+    border: 2px solid #2563eb !important;
+    border-radius: 12px !important;
+    box-shadow: none !important;
   }
 }
 </style>
@@ -480,6 +480,16 @@ tbody tr:nth-child(even):hover{background:var(--primary-light)}
 </div>
 </div>
 
+<div class="chart-card" style="background: white; border-radius: var(--radius-lg); box-shadow: var(--shadow-md); padding: 24px; margin-bottom: 24px;">
+<div style="display: flex; align-items: center; gap: 8px; margin-bottom: 16px;">
+<i class="fas fa-chart-line" style="color: var(--primary); font-size: 1.25rem;"></i>
+<h3 style="font-size: 1.1rem; color: var(--gray-800); font-weight: 600;">Daily Revenue (Current Month)</h3>
+</div>
+<div style="position: relative; height: 300px; width: 100%;">
+<canvas id="revenueChart"></canvas>
+</div>
+</div>
+
 <div class="add-new-bar">
 <button class="btn-add-new" onclick="openEntryModal()">
 <i class="fas fa-plus-circle"></i> Add New Entry
@@ -549,7 +559,7 @@ tbody tr:nth-child(even):hover{background:var(--primary-light)}
 <th onclick="sortTable(9)">Invoice <i class="fas fa-sort"></i></th>
 <th onclick="sortTable(10)">Request No <i class="fas fa-sort"></i></th>
 <th onclick="sortTable(11)">Entered By <i class="fas fa-sort"></i></th>
-<th style="text-align:center" class="admin-only" id="thAction">Action</th>
+<th style="text-align:center" id="thAction">Actions</th>
 </tr>
 </thead>
 <tbody id="recordsBody">
@@ -842,6 +852,76 @@ Point your camera at a QR code, National ID, or Barcode.
 <!-- Dynamic Action buttons injected by JS -->
 </div>
 </div>
+</div>
+</div>
+</div>
+
+<!-- Invoice Print Preview Modal Overlay -->
+<div class="invoice-modal-overlay" id="invoiceModalOverlay">
+<div class="invoice-modal-container">
+<div class="invoice-modal-header">
+<h3><i class="fas fa-receipt"></i> Invoice Receipt Preview</h3>
+<button type="button" class="btn-close-modal" onclick="closeInvoiceModal()" style="color:#ffffff;" title="Close"><i class="fas fa-times"></i></button>
+</div>
+<div class="invoice-modal-scroll">
+<div class="invoice-receipt-card" id="printableInvoiceCard">
+<div class="invoice-receipt-header">
+<div class="invoice-logo-icon">
+<i class="fas fa-plane-departure"></i>
+</div>
+<div class="invoice-receipt-title">Bin Mishal Travels</div>
+<div class="invoice-receipt-subtitle">Travel, Visa & Document Processing Services</div>
+<div class="invoice-number-tag" id="previewInvoiceNumber">INVOICE: INV-0001</div>
+</div>
+
+<table class="invoice-table-details">
+<tr>
+<td class="td-label"><i class="fas fa-calendar-alt" style="color:#2563eb;margin-right:6px;"></i> Date & Time:</td>
+<td class="td-val" id="previewInvoiceDateTime">-</td>
+</tr>
+<tr>
+<td class="td-label"><i class="fas fa-user" style="color:#2563eb;margin-right:6px;"></i> Customer Name:</td>
+<td class="td-val" id="previewInvoiceName" style="font-weight:700;color:#1e3a8a;">-</td>
+</tr>
+<tr>
+<td class="td-label"><i class="fas fa-id-card" style="color:#2563eb;margin-right:6px;"></i> ID / Iqama No:</td>
+<td class="td-val" id="previewInvoiceId">-</td>
+</tr>
+<tr>
+<td class="td-label"><i class="fas fa-phone" style="color:#2563eb;margin-right:6px;"></i> Mobile Number:</td>
+<td class="td-val" id="previewInvoiceMobile">-</td>
+</tr>
+<tr>
+<td class="td-label"><i class="fas fa-briefcase" style="color:#2563eb;margin-right:6px;"></i> Service / Application:</td>
+<td class="td-val" id="previewInvoiceApp" style="font-weight:700;">-</td>
+</tr>
+<tr>
+<td class="td-label"><i class="fas fa-hashtag" style="color:#2563eb;margin-right:6px;"></i> Age / Code:</td>
+<td class="td-val" id="previewInvoiceAgeCode">-</td>
+</tr>
+<tr id="previewInvoiceRequestRow">
+<td class="td-label"><i class="fas fa-barcode" style="color:#2563eb;margin-right:6px;"></i> Request No:</td>
+<td class="td-val" id="previewInvoiceRequestNo">-</td>
+</tr>
+<tr>
+<td class="td-label"><i class="fas fa-user-check" style="color:#2563eb;margin-right:6px;"></i> Processed By:</td>
+<td class="td-val" id="previewInvoiceCreator">-</td>
+</tr>
+</table>
+
+<div class="invoice-amount-box">
+<span class="lbl"><i class="fas fa-check-circle"></i> Total Amount Paid:</span>
+<span class="val" id="previewInvoiceAmount">$0.00</span>
+</div>
+
+<div class="invoice-receipt-footer">
+Thank you for choosing Bin Mishal Travels!
+</div>
+</div>
+</div>
+<div class="invoice-modal-footer">
+<button type="button" class="btn-invoice-share" onclick="copyInvoiceText()"><i class="fas fa-copy"></i> Copy Details</button>
+<button type="button" class="btn-invoice-print" onclick="printCurrentInvoice()"><i class="fas fa-print"></i> Print Invoice Receipt</button>
 </div>
 </div>
 </div>
@@ -1898,6 +1978,7 @@ function submitEntry() {
     clearFormFields();
     closeEntryModal();
     showToast('Entry Saved Successfully! Invoice: ' + record.invoice, 'success');
+    openInvoicePreview(record.id);
 }
 
 function clearFormFields() {
@@ -1918,6 +1999,78 @@ function clearForm() {
     }
 }
 
+// ========== INVOICE PRINT PREVIEW MODAL ==========
+let currentPreviewRecord = null;
+
+function openInvoicePreview(recordId) {
+    const record = records.find(r => r.id === recordId) || records.find(r => String(r.id) === String(recordId));
+    if (!record) {
+        showToast('Record not found for invoice preview', 'error');
+        return;
+    }
+    currentPreviewRecord = record;
+
+    document.getElementById('previewInvoiceNumber').textContent = 'INVOICE: ' + (record.invoice || 'INV-0000');
+    document.getElementById('previewInvoiceDateTime').textContent = (record.date || '') + ' ' + (record.time || '');
+    document.getElementById('previewInvoiceName').textContent = record.name || '-';
+    document.getElementById('previewInvoiceId').textContent = record.idNumber || '-';
+    document.getElementById('previewInvoiceMobile').textContent = record.mobile || '-';
+    document.getElementById('previewInvoiceApp').textContent = record.application || '-';
+    document.getElementById('previewInvoiceAgeCode').textContent = record.ageCode || '-';
+    
+    const reqRow = document.getElementById('previewInvoiceRequestRow');
+    if (record.requestNo) {
+        reqRow.style.display = 'table-row';
+        document.getElementById('previewInvoiceRequestNo').textContent = record.requestNo;
+    } else {
+        reqRow.style.display = 'none';
+    }
+
+    document.getElementById('previewInvoiceCreator').textContent = record.creator || 'Admin';
+    document.getElementById('previewInvoiceAmount').textContent = '$' + (Number(record.amount) || 0).toFixed(2);
+
+    document.getElementById('invoiceModalOverlay').classList.add('active');
+}
+
+function closeInvoiceModal() {
+    document.getElementById('invoiceModalOverlay').classList.remove('active');
+    currentPreviewRecord = null;
+}
+
+document.getElementById('invoiceModalOverlay').addEventListener('click', function(e) {
+    if (e.target === this) closeInvoiceModal();
+});
+
+function copyInvoiceText() {
+    if (!currentPreviewRecord) return;
+    const r = currentPreviewRecord;
+    const text = `==============================
+BIN MISHAL TRAVELS - INVOICE
+==============================
+Invoice No: ${r.invoice || 'INV-0000'}
+Date & Time: ${r.date || ''} ${r.time || ''}
+Customer Name: ${r.name || ''}
+ID / Iqama: ${r.idNumber || ''}
+Mobile: ${r.mobile || ''}
+Service: ${r.application || ''}
+Age / Code: ${r.ageCode || ''}
+${r.requestNo ? 'Request No: ' + r.requestNo + '\n' : ''}${r.comment ? 'Comment: ' + r.comment + '\n' : ''}Processed By: ${r.creator || 'Admin'}
+------------------------------
+TOTAL AMOUNT: $${(Number(r.amount) || 0).toFixed(2)}
+==============================
+Thank you for choosing Bin Mishal Travels!`;
+
+    navigator.clipboard.writeText(text).then(function() {
+        showToast('Invoice details copied to clipboard!', 'success');
+    }).catch(function() {
+        showToast('Could not copy to clipboard', 'warning');
+    });
+}
+
+function printCurrentInvoice() {
+    window.print();
+}
+
 // ========== TABLE ==========
 let currentDisplayedRecords = [];
 
@@ -1930,7 +2083,7 @@ function renderTable(data) {
     countEl.textContent = data.length + ' record' + (data.length !== 1 ? 's' : '');
 
     if (data.length === 0) {
-        tbody.innerHTML = '<tr class="empty-row"><td colspan="' + (isAdmin ? '13' : '12') + '"><div class="empty-state"><i class="fas fa-inbox"></i><h3>No records found</h3><p>' + (records.length === 0 ? 'Click &quot;Add New Entry&quot; to add your first record.' : 'No records match your search criteria.') + '</p></div></td></tr>';
+        tbody.innerHTML = '<tr class="empty-row"><td colspan="13"><div class="empty-state"><i class="fas fa-inbox"></i><h3>No records found</h3><p>' + (records.length === 0 ? 'Click &quot;Add New Entry&quot; to add your first record.' : 'No records match your search criteria.') + '</p></div></td></tr>';
         return;
     }
 
@@ -1947,12 +2100,15 @@ function renderTable(data) {
         html += '<td>' + escapeHtml(r.application) + '</td>';
         html += '<td>' + escapeHtml(r.ageCode) + '</td>';
         html += '<td class="amount-cell">$' + r.amount.toFixed(2) + '</td>';
-        html += '<td class="invoice-cell">' + escapeHtml(r.invoice || '-') + '</td>';
+        html += '<td class="invoice-cell"><a href="javascript:void(0)" class="badge-invoice" onclick="openInvoicePreview(' + r.id + ')" title="View & Print Invoice Receipt"><i class="fas fa-receipt"></i> ' + escapeHtml(r.invoice || '-') + ' <i class="fas fa-print" style="font-size:0.7rem;opacity:0.75;"></i></a></td>';
         html += '<td>' + escapeHtml(r.requestNo) + '</td>';
         html += '<td class="creator-cell"><i class="fas fa-user" style="font-size:.7rem;margin-right:4px;color:var(--gray-400)"></i>' + escapeHtml(r.creator || '-') + '</td>';
+        html += '<td class="actions-cell">';
+        html += '<button class="btn-invoice-row" onclick="openInvoicePreview(' + r.id + ')" title="Print Invoice Preview"><i class="fas fa-print"></i></button>';
         if (isAdmin) {
-            html += '<td class="actions-cell"><button class="btn-delete-row" onclick="deleteRecord(' + r.id + ')" title="Delete record"><i class="fas fa-trash-alt"></i></button></td>';
+            html += '<button class="btn-delete-row" onclick="deleteRecord(' + r.id + ')" title="Delete record"><i class="fas fa-trash-alt"></i></button>';
         }
+        html += '</td>';
         html += '</tr>';
     }
     tbody.innerHTML = html;
@@ -2121,6 +2277,122 @@ function updateStats() {
     if (monthEl) monthEl.textContent = monthCount;
     const last = records.length > 0 ? records[records.length - 1].name : '-';
     document.getElementById('stat-last').textContent = last;
+    updateRevenueChart();
+}
+
+let revenueChartInstance = null;
+
+function updateRevenueChart() {
+    const today = new Date();
+    const currentYear = today.getFullYear();
+    const currentMonth = today.getMonth() + 1;
+    const currentMonthStr = currentMonth.toString().padStart(2, '0');
+    const monthPrefix = `${currentYear}-${currentMonthStr}`;
+    
+    // Get number of days in current month
+    const daysInMonth = new Date(currentYear, currentMonth, 0).getDate();
+    
+    // Initialize daily revenue array with 0s
+    const labels = [];
+    const data = [];
+    for (let i = 1; i <= daysInMonth; i++) {
+        labels.push(i.toString());
+        data.push(0);
+    }
+    
+    // Aggregate revenue by day
+    records.forEach(r => {
+        if (r.date && r.date.startsWith(monthPrefix)) {
+            const dayStr = r.date.split('-')[2];
+            const day = parseInt(dayStr, 10);
+            if (day >= 1 && day <= daysInMonth) {
+                data[day - 1] += (Number(r.amount) || 0);
+            }
+        }
+    });
+
+    const ctx = document.getElementById('revenueChart');
+    if (!ctx) return;
+
+    if (revenueChartInstance) {
+        revenueChartInstance.data.labels = labels;
+        revenueChartInstance.data.datasets[0].data = data;
+        revenueChartInstance.update();
+    } else {
+        revenueChartInstance = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Daily Revenue ($)',
+                    data: data,
+                    borderColor: '#2563eb',
+                    backgroundColor: 'rgba(37, 99, 235, 0.1)',
+                    borderWidth: 2,
+                    pointBackgroundColor: '#ffffff',
+                    pointBorderColor: '#2563eb',
+                    pointBorderWidth: 2,
+                    pointRadius: 4,
+                    pointHoverRadius: 6,
+                    fill: true,
+                    tension: 0.3
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        backgroundColor: '#1f2937',
+                        padding: 12,
+                        titleFont: { size: 13, family: "'Inter', sans-serif" },
+                        bodyFont: { size: 14, family: "'Inter', sans-serif", weight: 'bold' },
+                        callbacks: {
+                            title: function(context) {
+                                return `Day ${context[0].label} - ${new Date(currentYear, currentMonth - 1).toLocaleString('default', { month: 'short' })}`;
+                            },
+                            label: function(context) {
+                                return `$${context.raw.toFixed(2)}`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: {
+                            display: false,
+                            drawBorder: false
+                        },
+                        ticks: {
+                            font: { family: "'Inter', sans-serif", size: 11 },
+                            color: '#64748b'
+                        }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: '#f1f5f9',
+                            drawBorder: false
+                        },
+                        ticks: {
+                            font: { family: "'Inter', sans-serif", size: 11 },
+                            color: '#64748b',
+                            callback: function(value) {
+                                return '$' + value;
+                            }
+                        }
+                    }
+                },
+                interaction: {
+                    intersect: false,
+                    mode: 'index',
+                },
+            }
+        });
+    }
 }
 
 function formatDate(dateStr) {
