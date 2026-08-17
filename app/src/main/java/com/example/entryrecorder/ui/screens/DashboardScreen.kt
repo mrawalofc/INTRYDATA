@@ -103,6 +103,7 @@ fun DashboardScreen(
     var showSortMenu by remember { mutableStateOf(false) }
 
     val isAdmin = currentUser?.role == "admin"
+    val canViewStats = isAdmin || currentUser?.canViewAmounts == true
 
     val filterOptions = listOf(
         "all" to "All Columns",
@@ -164,69 +165,71 @@ fun DashboardScreen(
                 )
             }
 
-            // Stats Cards Grid (Role-based: Total Amount only visible to Admin)
+            // Stats Cards Grid (Role-based: Total Amount only visible to Admin or permitted users)
             item {
                 DashboardStatsGrid(
                     stats = stats,
-                    isAdmin = isAdmin
+                    canViewStats = canViewStats
                 )
             }
 
             // Daily Revenue Chart
-            item {
-                Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(12.dp),
-                    colors = CardDefaults.cardColors(containerColor = Color.White),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp)
+            if (canViewStats) {
+                item {
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(12.dp),
+                        colors = CardDefaults.cardColors(containerColor = Color.White),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
                     ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier.padding(bottom = 16.dp)
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp)
                         ) {
-                            Icon(
-                                imageVector = Icons.Default.Timeline,
-                                contentDescription = null,
-                                tint = PrimaryBlue,
-                                modifier = Modifier.size(24.dp)
-                            )
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Text(
-                                text = "Daily Revenue (Current Month)",
-                                style = MaterialTheme.typography.titleMedium.copy(
-                                    fontWeight = FontWeight.Bold,
-                                    color = Color(0xFF1F2937)
-                                )
-                            )
-                        }
-
-                        if (chartData.isNotEmpty()) {
-                            Chart(
-                                chart = lineChart(),
-                                model = entryModelOf(chartData),
-                                startAxis = rememberStartAxis(
-                                    valueFormatter = { value, _ -> "\$${value.toInt()}" }
-                                ),
-                                bottomAxis = rememberBottomAxis(
-                                    valueFormatter = { value, _ -> value.toInt().toString() }
-                                ),
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(200.dp)
-                            )
-                        } else {
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(200.dp),
-                                contentAlignment = Alignment.Center
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier.padding(bottom = 16.dp)
                             ) {
-                                Text("No data available", color = Color.Gray)
+                                Icon(
+                                    imageVector = Icons.Default.Timeline,
+                                    contentDescription = null,
+                                    tint = PrimaryBlue,
+                                    modifier = Modifier.size(24.dp)
+                                )
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text(
+                                    text = "Daily Revenue (Current Month)",
+                                    style = MaterialTheme.typography.titleMedium.copy(
+                                        fontWeight = FontWeight.Bold,
+                                        color = Color(0xFF1F2937)
+                                    )
+                                )
+                            }
+
+                            if (chartData.isNotEmpty()) {
+                                Chart(
+                                    chart = lineChart(),
+                                    model = entryModelOf(chartData),
+                                    startAxis = rememberStartAxis(
+                                        valueFormatter = { value, _ -> "\$${value.toInt()}" }
+                                    ),
+                                    bottomAxis = rememberBottomAxis(
+                                        valueFormatter = { value, _ -> value.toInt().toString() }
+                                    ),
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(200.dp)
+                                )
+                            } else {
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(200.dp),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Text("No data available", color = Color.Gray)
+                                }
                             }
                         }
                     }

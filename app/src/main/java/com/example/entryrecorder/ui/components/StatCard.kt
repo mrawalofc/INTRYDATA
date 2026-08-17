@@ -33,12 +33,12 @@ private val EmeraldLight = Color(0xFFDCFCE7)
 @Composable
 fun DashboardStatsGrid(
     stats: DashboardStats,
-    isAdmin: Boolean,
+    canViewStats: Boolean,
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        if (isAdmin) {
-            // Admin: Total Records & Total Amount
+        if (canViewStats) {
+            // Admin or Permitted user: Total Records & Total Amount
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 StatCard(
                     title = "Total Records",

@@ -10,5 +10,6 @@ data class User(
     @PrimaryKey
     val email: String,
     val password: String,
-    val role: String = "user" // "admin" or "user"
+    val role: String = "user", // "admin" or "user"
+    val canViewAmounts: Boolean = false
 )

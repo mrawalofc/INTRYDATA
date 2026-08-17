@@ -424,6 +424,7 @@ tbody tr:nth-child(even):hover{background:var(--primary-light)}
 <th>Email / Username</th>
 <th>Password</th>
 <th>Role</th>
+<th style="text-align:center">View Stats</th>
 <th style="text-align:center">Action</th>
 </tr>
 </thead>
@@ -443,7 +444,7 @@ tbody tr:nth-child(even):hover{background:var(--primary-light)}
 <p id="stat-total">0</p>
 </div>
 </div>
-<div class="stat-card">
+<div class="stat-card" id="stat-card-total-amount">
 <div class="stat-icon green"><i class="fas fa-dollar-sign"></i></div>
 <div class="stat-info">
 <h4>Total Amount</h4>
@@ -457,7 +458,7 @@ tbody tr:nth-child(even):hover{background:var(--primary-light)}
 <p id="stat-today">0</p>
 </div>
 </div>
-<div class="stat-card">
+<div class="stat-card" id="stat-card-today-amount">
 <div class="stat-icon emerald"><i class="fas fa-coins"></i></div>
 <div class="stat-info">
 <h4>Today's Amount</h4>
@@ -480,7 +481,7 @@ tbody tr:nth-child(even):hover{background:var(--primary-light)}
 </div>
 </div>
 
-<div class="chart-card" style="background: white; border-radius: var(--radius-lg); box-shadow: var(--shadow-md); padding: 24px; margin-bottom: 24px;">
+<div class="chart-card" id="chart-card-container" style="background: white; border-radius: var(--radius-lg); box-shadow: var(--shadow-md); padding: 24px; margin-bottom: 24px;">
 <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 16px;">
 <i class="fas fa-chart-line" style="color: var(--primary); font-size: 1.25rem;"></i>
 <h3 style="font-size: 1.1rem; color: var(--gray-800); font-weight: 600;">Daily Revenue (Current Month)</h3>
@@ -1451,6 +1452,21 @@ function showApp() {
         adminPanelOpen = false;
     }
 
+    const canViewStats = isAdmin || (currentUser && currentUser.canViewAmounts === true);
+    const totalAmountCard = document.getElementById('stat-card-total-amount');
+    const todayAmountCard = document.getElementById('stat-card-today-amount');
+    const chartCard = document.getElementById('chart-card-container');
+    
+    if (canViewStats) {
+        if (totalAmountCard) totalAmountCard.style.display = 'block';
+        if (todayAmountCard) todayAmountCard.style.display = 'block';
+        if (chartCard) chartCard.style.display = 'block';
+    } else {
+        if (totalAmountCard) totalAmountCard.style.display = 'none';
+        if (todayAmountCard) todayAmountCard.style.display = 'none';
+        if (chartCard) chartCard.style.display = 'none';
+    }
+
     renderTable();
     updateStats();
     if (isAdmin) renderUsers();
@@ -1530,14 +1546,24 @@ function renderUsers() {
         html += '<td><code style="background:var(--gray-100);padding:2px 8px;border-radius:4px;font-size:.8rem">' + escapeHtml(u.password) + '</code></td>';
         if (u.role === 'admin') {
             html += '<td><span class="badge-admin"><i class="fas fa-shield-alt"></i> Admin</span></td>';
+            html += '<td style="text-align:center"><input type="checkbox" checked disabled></td>';
             html += '<td style="text-align:center"><span style="color:var(--gray-300)">-</span></td>';
         } else {
             html += '<td><span class="badge-user"><i class="fas fa-user"></i> User</span></td>';
+            html += '<td style="text-align:center"><input type="checkbox" ' + (u.canViewAmounts ? 'checked' : '') + ' onchange="toggleViewAmounts(' + i + ', this.checked)"></td>';
             html += '<td style="text-align:center"><button class="btn-delete-row" onclick="deleteUser(' + i + ')" title="Delete user"><i class="fas fa-trash-alt"></i></button></td>';
         }
         html += '</tr>';
     }
     tbody.innerHTML = html;
+}
+
+function toggleViewAmounts(index, isChecked) {
+    if (users[index]) {
+        users[index].canViewAmounts = isChecked;
+        saveUsersLocal();
+        syncToServer(false);
+    }
 }
 
 function addUser() {
@@ -1562,7 +1588,7 @@ function addUser() {
         return;
     }
 
-    users.push({ email: email, password: pass, role: 'user' });
+    users.push({ email: email, password: pass, role: 'user', canViewAmounts: false });
     saveUsersLocal();
     syncToServer(false);
     document.getElementById('newUserEmail').value = '';
