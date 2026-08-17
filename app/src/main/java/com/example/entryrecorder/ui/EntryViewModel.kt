@@ -51,8 +51,7 @@ data class DashboardStats(
 data class CustomerProfile(
     val name: String,
     val idNumber: String,
-    val mobile: String,
-    val ageCode: String
+    val mobile: String
 )
 
 class EntryViewModel(application: Application) : AndroidViewModel(application) {
@@ -114,8 +113,7 @@ class EntryViewModel(application: Application) : AndroidViewModel(application) {
                 profilesMap[key] = CustomerProfile(
                     name = r.name.trim(),
                     idNumber = r.idNumber.trim(),
-                    mobile = r.mobile.trim(),
-                    ageCode = r.ageCode.trim()
+                    mobile = r.mobile.trim()
                 )
             }
             val idKey = r.idNumber.trim().lowercase(Locale.getDefault())
@@ -123,8 +121,7 @@ class EntryViewModel(application: Application) : AndroidViewModel(application) {
                 profilesMap[idKey] = CustomerProfile(
                     name = r.name.trim(),
                     idNumber = r.idNumber.trim(),
-                    mobile = r.mobile.trim(),
-                    ageCode = r.ageCode.trim()
+                    mobile = r.mobile.trim()
                 )
             }
         }
@@ -370,9 +367,7 @@ class EntryViewModel(application: Application) : AndroidViewModel(application) {
         idNumber: String,
         mobile: String,
         applicationName: String,
-        ageCode: String,
         amount: Double,
-        requestNo: String = "",
         comment: String = "",
         onComplete: (Boolean, String) -> Unit = { _, _ -> },
         onRecordCreated: ((EntryRecord) -> Unit)? = null
@@ -395,10 +390,8 @@ class EntryViewModel(application: Application) : AndroidViewModel(application) {
                     idNumber = idNumber.trim(),
                     mobile = mobile.trim(),
                     application = applicationName.trim(),
-                    ageCode = ageCode.trim(),
                     amount = amount,
                     invoice = nextInvoice,
-                    requestNo = requestNo.trim(),
                     creator = creator,
                     timestamp = isoFormat.format(Date()),
                     comment = comment.trim()
@@ -419,7 +412,6 @@ class EntryViewModel(application: Application) : AndroidViewModel(application) {
 
     fun updateQuickRecord(
         id: Long,
-        ageCode: String,
         mobile: String,
         idNumber: String,
         comment: String,
@@ -429,7 +421,6 @@ class EntryViewModel(application: Application) : AndroidViewModel(application) {
             try {
                 repository.updateQuickFields(
                     id = id,
-                    ageCode = ageCode,
                     mobile = mobile,
                     idNumber = idNumber,
                     comment = comment

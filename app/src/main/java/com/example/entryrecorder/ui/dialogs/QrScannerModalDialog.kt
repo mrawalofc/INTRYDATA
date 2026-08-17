@@ -232,13 +232,6 @@ fun QrScannerModalDialog(
                                                 fontSize = 12.sp
                                             )
                                         }
-                                        if (result.ageCode != null) {
-                                            Text(
-                                                "• Age/Code: ${result.ageCode}",
-                                                color = Slate200,
-                                                fontSize = 12.sp
-                                            )
-                                        }
                                     }
                                 }
                             }
@@ -259,7 +252,6 @@ fun QrScannerModalDialog(
                                         result.name,
                                         result.idNumber,
                                         result.mobile,
-                                        result.ageCode,
                                         result.application
                                     )
                                     onDismiss()

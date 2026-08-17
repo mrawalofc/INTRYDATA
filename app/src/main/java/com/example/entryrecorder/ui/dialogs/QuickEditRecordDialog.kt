@@ -208,26 +208,6 @@ fun QuickEditRecordDialog(
 
                     Spacer(modifier = Modifier.height(12.dp))
 
-                    // Age / Code
-                    OutlinedTextField(
-                        value = ageCodeInput,
-                        onValueChange = {
-                            ageCodeInput = it
-                            errorMessage = null
-                        },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .testTag("edit_field_age_code"),
-                        label = { Text("Age / Code *") },
-                        leadingIcon = {
-                            Icon(Icons.Default.Tag, contentDescription = null, tint = PrimaryBlue)
-                        },
-                        singleLine = true,
-                        shape = RoundedCornerShape(10.dp)
-                    )
-
-                    Spacer(modifier = Modifier.height(12.dp))
-
                     // Comment / Small Box Remark
                     OutlinedTextField(
                         value = commentInput,
@@ -251,14 +231,13 @@ fun QuickEditRecordDialog(
 
                     Button(
                         onClick = {
-                            if (idNumberInput.isBlank() || mobileInput.isBlank() || ageCodeInput.isBlank()) {
-                                errorMessage = "Please fill in ID Number, Phone, and Age/Code."
+                            if (idNumberInput.isBlank() || mobileInput.isBlank()) {
+                                errorMessage = "Please fill in ID Number and Phone."
                                 return@Button
                             }
                             isSaving = true
                             viewModel.updateQuickRecord(
                                 id = record.id,
-                                ageCode = ageCodeInput,
                                 mobile = mobileInput,
                                 idNumber = idNumberInput,
                                 comment = commentInput

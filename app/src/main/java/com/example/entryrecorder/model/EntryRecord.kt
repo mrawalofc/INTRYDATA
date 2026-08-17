@@ -16,10 +16,8 @@ data class EntryRecord(
     val idNumber: String = "",
     val mobile: String = "",
     val application: String = "",
-    val ageCode: String = "",
     val amount: Double = 0.0,
     val invoice: String = "",
-    val requestNo: String = "",
     val creator: String = "",
     val timestamp: String = "",
     val comment: String = ""
