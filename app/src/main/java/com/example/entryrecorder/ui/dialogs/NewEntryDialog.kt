@@ -58,6 +58,7 @@ fun NewEntryDialog(
     var isServiceDropdownOpen by remember { mutableStateOf(false) }
     var serviceSearchQuery by remember { mutableStateOf("") }
     var errorMessage by remember { mutableStateOf<String?>(null) }
+    var showQrScanner by remember { mutableStateOf(false) }
 
     var showNameSuggestions by remember { mutableStateOf(false) }
     var showIdSuggestions by remember { mutableStateOf(false) }
@@ -208,7 +209,36 @@ fun NewEntryDialog(
                         }
                     }
 
-                    Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(modifier = Modifier.height(14.dp))
+
+                    // Scan QR Button (Camera)
+                    Button(
+                        onClick = { showQrScanner = true },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(48.dp)
+                            .testTag("btn_scan_qr_modal"),
+                        shape = RoundedCornerShape(10.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = PrimaryBlue),
+                        elevation = ButtonDefaults.buttonElevation(defaultElevation = 2.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.QrCodeScanner,
+                            contentDescription = "Scan QR",
+                            tint = Color.White,
+                            modifier = Modifier.size(20.dp)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = "Scan QR / Camera Read (Auto Fill)",
+                            style = MaterialTheme.typography.titleSmall.copy(
+                                fontWeight = FontWeight.Bold,
+                                color = Color.White
+                            )
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(14.dp))
 
                     if (errorMessage != null) {
                         Surface(
@@ -257,18 +287,31 @@ fun NewEntryDialog(
                                 .fillMaxWidth()
                                 .testTag("entry_field_name"),
                             label = { Text("Customer Name * (Auto-suggests ID & Phone)") },
-                            placeholder = { Text("Type name to auto-fill details") },
+                            placeholder = { Text("Type name or scan QR") },
                             leadingIcon = {
                                 Icon(Icons.Default.Person, contentDescription = null, tint = PrimaryBlue)
                             },
                             trailingIcon = {
-                                if (nameSuggestions.isNotEmpty()) {
-                                    Icon(
-                                        Icons.Default.AutoAwesome,
-                                        contentDescription = "Auto fill available",
-                                        tint = PrimaryBlue,
-                                        modifier = Modifier.size(20.dp)
-                                    )
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    IconButton(
+                                        onClick = { showQrScanner = true },
+                                        modifier = Modifier.size(36.dp)
+                                    ) {
+                                        Icon(
+                                            Icons.Default.QrCodeScanner,
+                                            contentDescription = "Scan for Name",
+                                            tint = PrimaryBlue,
+                                            modifier = Modifier.size(18.dp)
+                                        )
+                                    }
+                                    if (nameSuggestions.isNotEmpty()) {
+                                        Icon(
+                                            Icons.Default.AutoAwesome,
+                                            contentDescription = "Auto fill available",
+                                            tint = PrimaryBlue,
+                                            modifier = Modifier.size(18.dp)
+                                        )
+                                    }
                                 }
                             },
                             singleLine = true,
@@ -350,9 +393,22 @@ fun NewEntryDialog(
                                 .fillMaxWidth()
                                 .testTag("entry_field_id"),
                             label = { Text("ID Number *") },
-                            placeholder = { Text("Enter or search ID number") },
+                            placeholder = { Text("Enter, search, or scan ID number") },
                             leadingIcon = {
                                 Icon(Icons.Default.Badge, contentDescription = null, tint = PrimaryBlue)
+                            },
+                            trailingIcon = {
+                                IconButton(
+                                    onClick = { showQrScanner = true },
+                                    modifier = Modifier.size(36.dp)
+                                ) {
+                                    Icon(
+                                        Icons.Default.QrCodeScanner,
+                                        contentDescription = "Scan for ID",
+                                        tint = PrimaryBlue,
+                                        modifier = Modifier.size(18.dp)
+                                    )
+                                }
                             },
                             singleLine = true,
                             shape = RoundedCornerShape(10.dp)
@@ -638,6 +694,45 @@ fun NewEntryDialog(
                         }
                     }
                 }
+            }
+        }
+    }
+
+    // QR Code Scanner Camera Dialog
+    if (showQrScanner) {
+        QrScannerModalDialog(
+            onDismiss = { showQrScanner = false }
+        ) { scannedName, scannedId, scannedMobile, scannedAgeCode, scannedApp ->
+            if (!scannedName.isNullOrBlank()) {
+                nameInput = scannedName
+                showNameSuggestions = false
+            }
+            if (!scannedId.isNullOrBlank()) {
+                idInput = scannedId
+                showIdSuggestions = false
+            }
+            if (!scannedMobile.isNullOrBlank()) {
+                mobileInput = scannedMobile
+            }
+            if (!scannedAgeCode.isNullOrBlank()) {
+                ageCodeInput = scannedAgeCode
+            }
+            if (!scannedApp.isNullOrBlank()) {
+                selectedApplication = scannedApp
+            }
+
+            // Check if scanned ID or Name matches a known customer profile to auto-fill remainder
+            val matchedProfile = if (!scannedId.isNullOrBlank()) {
+                knownProfiles.find { it.idNumber.equals(scannedId.trim(), ignoreCase = true) }
+            } else if (!scannedName.isNullOrBlank()) {
+                knownProfiles.find { it.name.equals(scannedName.trim(), ignoreCase = true) }
+            } else null
+
+            if (matchedProfile != null) {
+                if (nameInput.isBlank()) nameInput = matchedProfile.name
+                if (idInput.isBlank()) idInput = matchedProfile.idNumber
+                if (mobileInput.isBlank()) mobileInput = matchedProfile.mobile
+                if (ageCodeInput.isBlank()) ageCodeInput = matchedProfile.ageCode
             }
         }
     }

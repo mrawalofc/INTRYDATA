@@ -6,7 +6,6 @@
 <title>Bin Mishal Travels - Cloud Sync</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js"></script>
 <style>
 :root{--primary:#2563eb;--primary-dark:#1d4ed8;--primary-light:#dbeafe;--success:#059669;--success-light:#d1fae5;--danger:#dc2626;--danger-light:#fee2e2;--warning:#d97706;--warning-light:#fef3c7;--admin:#7c3aed;--admin-light:#ede9fe;--gray-50:#f9fafb;--gray-100:#f3f4f6;--gray-200:#e5e7eb;--gray-300:#d1d5db;--gray-400:#9ca3af;--gray-500:#6b7280;--gray-600:#4b5563;--gray-700:#374151;--gray-800:#1f2937;--gray-900:#111827;--shadow:0 1px 3px 0 rgba(0,0,0,0.1),0 1px 2px -1px rgba(0,0,0,0.1);--shadow-md:0 4px 6px -1px rgba(0,0,0,0.1),0 2px 4px -2px rgba(0,0,0,0.1);--shadow-lg:0 10px 15px -3px rgba(0,0,0,0.1),0 4px 6px -4px rgba(0,0,0,0.1);--radius:8px;--radius-lg:12px}
 *{margin:0;padding:0;box-sizing:border-box}
@@ -60,26 +59,6 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;background:
 .invoice-display label{font-size:.875rem;font-weight:600;color:var(--primary-dark)}
 .invoice-display .invoice-number{font-size:1.25rem;font-weight:700;color:var(--primary);font-family:monospace;letter-spacing:1px}
 .invoice-display i{color:var(--primary)}
-.btn-scan-qr{width:100%;padding:12px;background:linear-gradient(135deg,#2563eb 0%,#1d4ed8 100%);color:white;border:none;border-radius:var(--radius);font-size:.9375rem;font-weight:600;font-family:inherit;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:16px;box-shadow:0 4px 6px -1px rgba(37,99,235,.25)}
-.btn-scan-qr:hover{transform:translateY(-1px);box-shadow:0 6px 12px -2px rgba(37,99,235,.35)}
-.input-with-action{display:flex;position:relative}
-.input-with-action input{padding-right:42px}
-.btn-input-scan{position:absolute;right:6px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--primary);cursor:pointer;padding:6px;font-size:1rem;border-radius:6px;transition:background .2s}
-.btn-input-scan:hover{background:var(--primary-light)}
-.qr-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);display:none;align-items:center;justify-content:center;z-index:4000;padding:20px}
-.qr-modal-overlay.active{display:flex}
-.qr-modal{background:#0f172a;color:white;border-radius:var(--radius-lg);box-shadow:var(--shadow-lg);width:100%;max-width:480px;overflow:hidden;animation:modalIn .3s ease}
-.qr-modal-header{background:#1e293b;padding:16px 20px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #334155}
-.qr-modal-header h3{font-size:1.1rem;font-weight:600;display:flex;align-items:center;gap:8px;color:#60a5fa}
-.qr-modal-body{padding:20px;display:flex;flex-direction:column;align-items:center}
-.qr-reader-container{width:100%;max-width:380px;min-height:280px;background:#000;border-radius:12px;overflow:hidden;position:relative;border:2px solid #3b82f6}
-.qr-result-box{background:#1e293b;border:1.5px solid #2563eb;border-radius:10px;padding:16px;width:100%;margin-top:16px}
-.qr-result-text{background:#0f172a;color:#93c5fd;padding:10px;border-radius:6px;font-family:monospace;font-size:.875rem;word-break:break-all;margin-top:8px}
-.qr-actions{display:flex;gap:10px;width:100%;margin-top:16px;flex-wrap:wrap}
-.qr-actions button{flex:1;min-width:120px;padding:10px;border-radius:8px;border:none;font-weight:600;font-size:.875rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px}
-.btn-apply-name{background:var(--primary);color:white}
-.btn-apply-id{background:#0284c7;color:white}
-.btn-apply-all{background:var(--success);color:white;width:100%;margin-bottom:8px}
 .form-group{margin-bottom:16px}
 .form-group label{display:block;font-size:.875rem;font-weight:500;color:var(--gray-700);margin-bottom:6px;display:flex;align-items:center;gap:6px}
 .form-group label i{color:var(--primary);font-size:.875rem;width:16px}
@@ -612,31 +591,18 @@ tbody tr:nth-child(even):hover{background:var(--primary-light)}
 </div>
 <i class="fas fa-receipt" style="font-size:1.5rem;opacity:.5"></i>
 </div>
-
-<button type="button" class="btn-scan-qr" onclick="openQrScannerModal()">
-<i class="fas fa-qrcode"></i> Scan QR / Read ID (Camera)
-</button>
-
 <form id="entryForm" onsubmit="return false;">
 <div class="form-group">
 <label><i class="fas fa-calendar"></i> Date</label>
 <input type="date" class="form-control" id="fieldDate" required>
 </div>
 <div class="form-group">
-<label><i class="fas fa-user"></i> Name (Auto-suggests ID & Phone)</label>
-<div class="input-with-action">
-<input type="text" class="form-control" id="fieldName" placeholder="Enter full name or scan QR" required autocomplete="off">
-<button type="button" class="btn-input-scan" onclick="openQrScannerModal('name')" title="Scan QR for Name"><i class="fas fa-qrcode"></i></button>
-</div>
-<div id="nameSuggestionsDropdown" style="display:none;background:white;border:1px solid var(--primary);border-radius:6px;box-shadow:var(--shadow-md);margin-top:4px;max-height:160px;overflow-y:auto;"></div>
+<label><i class="fas fa-user"></i> Name</label>
+<input type="text" class="form-control" id="fieldName" placeholder="Enter full name" required>
 </div>
 <div class="form-group">
 <label><i class="fas fa-id-card"></i> ID Number</label>
-<div class="input-with-action">
-<input type="text" class="form-control" id="fieldID" placeholder="Enter ID number or scan QR" required autocomplete="off">
-<button type="button" class="btn-input-scan" onclick="openQrScannerModal('id')" title="Scan QR for ID Number"><i class="fas fa-qrcode"></i></button>
-</div>
-<div id="idSuggestionsDropdown" style="display:none;background:white;border:1px solid var(--primary);border-radius:6px;box-shadow:var(--shadow-md);margin-top:4px;max-height:160px;overflow-y:auto;"></div>
+<input type="text" class="form-control" id="fieldID" placeholder="Enter ID number" required>
 </div>
 <div class="form-group">
 <label><i class="fas fa-phone"></i> Mobile</label>
@@ -802,46 +768,6 @@ tbody tr:nth-child(even):hover{background:var(--primary-light)}
 <div class="modal-actions" style="margin-top:14px;justify-content:flex-end;">
 <button class="modal-btn modal-btn-secondary" onclick="closeScriptModal()">Close</button>
 <button class="modal-btn" style="background:var(--success);color:#fff;" onclick="copyAppsScriptCode()"><i class="fas fa-copy"></i> Copy Code</button>
-</div>
-</div>
-</div>
-
-<!-- QR Scanner Modal Overlay -->
-<div class="qr-modal-overlay" id="qrScannerModalOverlay">
-<div class="qr-modal">
-<div class="qr-modal-header">
-<h3><i class="fas fa-qrcode"></i> Scan QR / Barcode</h3>
-<button type="button" class="btn-close-modal" onclick="closeQrScannerModal()" style="color:#94a3b8;"><i class="fas fa-times"></i></button>
-</div>
-<div class="qr-modal-body">
-<div id="qrScannerBox" class="qr-reader-container">
-<div id="html5QrReader" style="width:100%;"></div>
-</div>
-
-<div id="qrScanStatusMsg" style="margin-top:10px;font-size:0.85rem;color:#94a3b8;text-align:center;">
-Point your camera at a QR code, National ID, or Barcode.
-</div>
-
-<div style="display:flex;gap:10px;margin-top:12px;width:100%;justify-content:center;">
-<label class="btn-export" style="background:#1e293b;color:#cbd5e1;border-color:#475569;font-size:0.8rem;cursor:pointer;">
-<i class="fas fa-image"></i> Scan Image
-<input type="file" id="qrFileInput" accept="image/*" style="display:none;" onchange="handleQrImageUpload(event)">
-</label>
-<button type="button" class="btn-export" style="background:#1e293b;color:#cbd5e1;border-color:#475569;font-size:0.8rem;" onclick="toggleQrCameraFacing()">
-<i class="fas fa-sync-alt"></i> Flip Camera
-</button>
-</div>
-
-<div id="qrResultCard" class="qr-result-box" style="display:none;">
-<div style="font-weight:600;font-size:0.875rem;color:#4ade80;display:flex;align-items:center;gap:6px;">
-<i class="fas fa-check-circle"></i> Decoded Scanned Text:
-</div>
-<div class="qr-result-text" id="qrResultText"></div>
-<div id="qrDetectedFields" style="font-size:0.8rem;color:#cbd5e1;margin-top:8px;"></div>
-<div class="qr-actions" id="qrActionButtons">
-<!-- Dynamic Action buttons injected by JS -->
-</div>
-</div>
 </div>
 </div>
 </div>
@@ -1381,7 +1307,6 @@ function showApp() {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-    setupAutocomplete();
     initData().then(() => {
         if (sessionStorage.getItem('isLoggedIn') === 'true') {
             const email = sessionStorage.getItem('loggedInUser');
@@ -1508,353 +1433,6 @@ function deleteUser(index) {
     syncToServer(false);
     renderUsers();
     showToast('User deleted', 'warning');
-}
-
-function openEntryModal() {
-    document.getElementById('entryModalOverlay').classList.add('active');
-    document.getElementById('modalInvoiceDisplay').textContent = getNextInvoiceNumber();
-    if (!document.getElementById('fieldDate').value) {
-        document.getElementById('fieldDate').value = new Date().toISOString().slice(0, 10);
-    }
-    setTimeout(() => {
-        document.getElementById('fieldName').focus();
-    }, 100);
-}
-
-function closeEntryModal() {
-    document.getElementById('entryModalOverlay').classList.remove('active');
-    closeQrScannerModal();
-}
-
-// ========== QR SCANNER (CAMERA & IMAGE) ==========
-let html5QrScannerInstance = null;
-let currentCameraFacingMode = "environment";
-let activeScanTargetField = null; // 'name', 'id', or null (auto)
-
-function openQrScannerModal(targetField) {
-    activeScanTargetField = targetField || null;
-    document.getElementById('qrScannerModalOverlay').classList.add('active');
-    document.getElementById('qrResultCard').style.display = 'none';
-    document.getElementById('qrScanStatusMsg').textContent = 'Initializing camera scanner...';
-    startQrCameraScanner();
-}
-
-function closeQrScannerModal() {
-    stopQrCameraScanner();
-    document.getElementById('qrScannerModalOverlay').classList.remove('active');
-    document.getElementById('qrResultCard').style.display = 'none';
-}
-
-function startQrCameraScanner() {
-    if (html5QrScannerInstance) {
-        try {
-            html5QrScannerInstance.stop().catch(() => {});
-        } catch (e) {}
-        html5QrScannerInstance = null;
-    }
-
-    if (typeof Html5Qrcode === 'undefined') {
-        document.getElementById('qrScanStatusMsg').innerHTML = '<span style="color:#f87171;">QR Scanner library loading failed. Please use "Scan Image" option.</span>';
-        return;
-    }
-
-    try {
-        html5QrScannerInstance = new Html5Qrcode("html5QrReader");
-        const config = {
-            fps: 15,
-            qrbox: { width: 220, height: 220 },
-            aspectRatio: 1.0
-        };
-
-        html5QrScannerInstance.start(
-            { facingMode: currentCameraFacingMode },
-            config,
-            onQrCodeDetected,
-            onQrCodeScanError
-        ).then(() => {
-            document.getElementById('qrScanStatusMsg').textContent = 'Camera active. Point at QR code or Barcode.';
-        }).catch((err) => {
-            console.warn('Camera start error:', err);
-            document.getElementById('qrScanStatusMsg').innerHTML = '<span style="color:#fbbf24;">Camera access unavailable. You can upload a photo of the QR code using "Scan Image".</span>';
-        });
-    } catch (err) {
-        console.error('QR Scanner init error:', err);
-    }
-}
-
-function stopQrCameraScanner() {
-    if (html5QrScannerInstance) {
-        try {
-            html5QrScannerInstance.stop().then(() => {
-                html5QrScannerInstance.clear();
-                html5QrScannerInstance = null;
-            }).catch(() => {
-                html5QrScannerInstance = null;
-            });
-        } catch (e) {
-            html5QrScannerInstance = null;
-        }
-    }
-}
-
-function toggleQrCameraFacing() {
-    currentCameraFacingMode = (currentCameraFacingMode === "environment") ? "user" : "environment";
-    startQrCameraScanner();
-}
-
-function handleQrImageUpload(event) {
-    const file = event.target.files[0];
-    if (!file) return;
-
-    if (typeof Html5Qrcode === 'undefined') {
-        showToast('QR scanner library is not ready', 'error');
-        return;
-    }
-
-    const scanner = new Html5Qrcode("html5QrReader");
-    document.getElementById('qrScanStatusMsg').textContent = 'Decoding uploaded image...';
-    scanner.scanFile(file, true)
-        .then((decodedText) => {
-            onQrCodeDetected(decodedText);
-        })
-        .catch((err) => {
-            console.error('File scan error:', err);
-            document.getElementById('qrScanStatusMsg').innerHTML = '<span style="color:#f87171;">No QR code or Barcode found in the uploaded image.</span>';
-        });
-}
-
-function parseQrText(rawText) {
-    const text = (rawText || '').trim();
-    let result = { raw: text, name: null, id: null, mobile: null, ageCode: null, application: null };
-
-    // 1. Try JSON
-    if (text.startsWith('{') && text.endsWith('}')) {
-        try {
-            const obj = JSON.parse(text);
-            result.name = obj.name || obj.Name || null;
-            result.id = obj.idNumber || obj.id || obj.ID || obj.iqama || null;
-            result.mobile = obj.mobile || obj.phone || obj.Mobile || null;
-            result.ageCode = obj.ageCode || obj.code || null;
-            result.application = obj.application || obj.service || null;
-            return result;
-        } catch (e) {}
-    }
-
-    // 2. Try Key-Value lines
-    const lines = text.split(/[\n;,]/);
-    for (const line of lines) {
-        const parts = line.split(/[:=]/);
-        if (parts.length >= 2) {
-            const key = parts[0].trim().toLowerCase();
-            const val = parts.slice(1).join(':').trim();
-            if (val) {
-                if (key.includes('name') || key.includes('اسم')) result.name = val;
-                else if (key.includes('id') || key.includes('iqama') || key.includes('هوية')) result.id = val;
-                else if (key.includes('mobile') || key.includes('phone') || key.includes('جوال')) result.mobile = val;
-                else if (key.includes('code') || key.includes('age')) result.ageCode = val;
-                else if (key.includes('app') || key.includes('service')) result.application = val;
-            }
-        }
-    }
-    if (result.name || result.id || result.mobile) return result;
-
-    // 3. Check purely numeric (likely ID number)
-    const digitsOnly = text.replace(/[^0-9]/g, '');
-    if (digitsOnly.length >= 8 && digitsOnly.length <= 15 && digitsOnly.length === text.length) {
-        result.id = text;
-        return result;
-    }
-
-    // 4. Default: Name or ID
-    if (!text.match(/[0-9]{4,}/)) {
-        result.name = text;
-    } else {
-        result.id = text;
-    }
-    return result;
-}
-
-function onQrCodeDetected(decodedText) {
-    const parsed = parseQrText(decodedText);
-    const resultCard = document.getElementById('qrResultCard');
-    const resultTextEl = document.getElementById('qrResultText');
-    const detectedFieldsEl = document.getElementById('qrDetectedFields');
-    const actionButtonsEl = document.getElementById('qrActionButtons');
-
-    resultTextEl.textContent = decodedText;
-    resultCard.style.display = 'block';
-    document.getElementById('qrScanStatusMsg').innerHTML = '<span style="color:#4ade80;"><i class="fas fa-check"></i> QR Code successfully detected!</span>';
-
-    let detectedDetails = [];
-    if (parsed.name) detectedDetails.push('<strong>Name:</strong> ' + escapeHtml(parsed.name));
-    if (parsed.id) detectedDetails.push('<strong>ID:</strong> ' + escapeHtml(parsed.id));
-    if (parsed.mobile) detectedDetails.push('<strong>Mobile:</strong> ' + escapeHtml(parsed.mobile));
-    if (parsed.ageCode) detectedDetails.push('<strong>Age/Code:</strong> ' + escapeHtml(parsed.ageCode));
-
-    detectedFieldsEl.innerHTML = detectedDetails.length > 0 ? detectedDetails.join(' | ') : 'Click an action below to fill into form:';
-
-    // Build Action Buttons
-    let buttonsHtml = '';
-    if (parsed.name && parsed.id) {
-        buttonsHtml += `<button type="button" class="btn-apply-all" onclick="applyQrValues('${escapeJsString(parsed.name)}', '${escapeJsString(parsed.id)}', '${escapeJsString(parsed.mobile || '')}', '${escapeJsString(parsed.ageCode || '')}')"><i class="fas fa-magic"></i> Auto-Fill All Details</button>`;
-    }
-
-    const nameVal = parsed.name || parsed.raw;
-    const idVal = parsed.id || parsed.raw;
-
-    buttonsHtml += `<button type="button" class="btn-apply-name" onclick="applyQrField('name', '${escapeJsString(nameVal)}')"><i class="fas fa-user"></i> Fill as Name</button>`;
-    buttonsHtml += `<button type="button" class="btn-apply-id" onclick="applyQrField('id', '${escapeJsString(idVal)}')"><i class="fas fa-id-card"></i> Fill as ID Number</button>`;
-
-    actionButtonsEl.innerHTML = buttonsHtml;
-
-    // If targeted directly for a single field, automatically apply if high confidence
-    if (activeScanTargetField === 'name') {
-        applyQrField('name', nameVal);
-    } else if (activeScanTargetField === 'id') {
-        applyQrField('id', idVal);
-    }
-}
-
-function escapeJsString(str) {
-    if (!str) return '';
-    return str.replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/"/g, '\\"').replace(/\n/g, '\\n');
-}
-
-function applyQrField(field, value) {
-    if (field === 'name') {
-        document.getElementById('fieldName').value = value;
-        searchCustomerAndFill('name', value);
-    } else if (field === 'id') {
-        document.getElementById('fieldID').value = value;
-        searchCustomerAndFill('id', value);
-    }
-    closeQrScannerModal();
-    showToast('Applied "' + value + '" to ' + (field === 'name' ? 'Name' : 'ID Number'), 'success');
-}
-
-function applyQrValues(name, id, mobile, ageCode) {
-    if (name) document.getElementById('fieldName').value = name;
-    if (id) document.getElementById('fieldID').value = id;
-    if (mobile) document.getElementById('fieldMobile').value = mobile;
-    if (ageCode) document.getElementById('fieldAgeCode').value = ageCode;
-
-    // Also check records database to complete missing fields
-    if (id) searchCustomerAndFill('id', id);
-    else if (name) searchCustomerAndFill('name', name);
-
-    closeQrScannerModal();
-    showToast('Customer information filled successfully!', 'success');
-}
-
-function searchCustomerAndFill(type, query) {
-    if (!query) return;
-    const q = query.trim().toLowerCase();
-    const match = records.find(r => {
-        if (type === 'id') return (r.idNumber || '').toLowerCase() === q;
-        if (type === 'name') return (r.name || '').toLowerCase() === q;
-        return false;
-    });
-
-    if (match) {
-        if (!document.getElementById('fieldName').value && match.name) document.getElementById('fieldName').value = match.name;
-        if (!document.getElementById('fieldID').value && match.idNumber) document.getElementById('fieldID').value = match.idNumber;
-        if (!document.getElementById('fieldMobile').value && match.mobile) document.getElementById('fieldMobile').value = match.mobile;
-        if (!document.getElementById('fieldAgeCode').value && match.ageCode) document.getElementById('fieldAgeCode').value = match.ageCode;
-        showToast('Existing customer profile matched & loaded: ' + match.name, 'success');
-    }
-}
-
-function onQrCodeScanError(errorMessage) {
-    // Silently ignore regular frame scan errors
-}
-
-// Autocomplete suggestions for Name and ID fields
-function setupAutocomplete() {
-    const nameInput = document.getElementById('fieldName');
-    const idInput = document.getElementById('fieldID');
-    const nameDropdown = document.getElementById('nameSuggestionsDropdown');
-    const idDropdown = document.getElementById('idSuggestionsDropdown');
-
-    if (!nameInput || !idInput) return;
-
-    nameInput.addEventListener('input', function() {
-        const val = this.value.trim().toLowerCase();
-        if (val.length < 2) {
-            nameDropdown.style.display = 'none';
-            return;
-        }
-
-        const uniqueProfiles = [];
-        const seenNames = new Set();
-        for (const r of records) {
-            if (r.name && r.name.toLowerCase().includes(val) && !seenNames.has(r.name.toLowerCase())) {
-                seenNames.add(r.name.toLowerCase());
-                uniqueProfiles.push(r);
-                if (uniqueProfiles.length >= 5) break;
-            }
-        }
-
-        if (uniqueProfiles.length === 0) {
-            nameDropdown.style.display = 'none';
-            return;
-        }
-
-        nameDropdown.innerHTML = uniqueProfiles.map(p => `
-            <div style="padding:8px 12px;border-bottom:1px solid #f1f5f9;cursor:pointer;display:flex;justify-content:space-between;align-items:center;"
-                 onclick="applyQrValues('${escapeJsString(p.name)}', '${escapeJsString(p.idNumber)}', '${escapeJsString(p.mobile || '')}', '${escapeJsString(p.ageCode || '')}'); document.getElementById('nameSuggestionsDropdown').style.display='none';">
-                <div>
-                    <div style="font-weight:600;font-size:0.875rem;color:#1e293b;">${escapeHtml(p.name)}</div>
-                    <div style="font-size:0.75rem;color:#64748b;">ID: ${escapeHtml(p.idNumber)} | Tel: ${escapeHtml(p.mobile || '-')}</div>
-                </div>
-                <span style="font-size:0.75rem;background:#dbeafe;color:#1d4ed8;padding:2px 6px;border-radius:4px;">${escapeHtml(p.ageCode || 'Code')}</span>
-            </div>
-        `).join('');
-        nameDropdown.style.display = 'block';
-    });
-
-    idInput.addEventListener('input', function() {
-        const val = this.value.trim().toLowerCase();
-        if (val.length < 2) {
-            idDropdown.style.display = 'none';
-            return;
-        }
-
-        const uniqueProfiles = [];
-        const seenIds = new Set();
-        for (const r of records) {
-            if (r.idNumber && r.idNumber.toLowerCase().includes(val) && !seenIds.has(r.idNumber.toLowerCase())) {
-                seenIds.add(r.idNumber.toLowerCase());
-                uniqueProfiles.push(r);
-                if (uniqueProfiles.length >= 5) break;
-            }
-        }
-
-        if (uniqueProfiles.length === 0) {
-            idDropdown.style.display = 'none';
-            return;
-        }
-
-        idDropdown.innerHTML = uniqueProfiles.map(p => `
-            <div style="padding:8px 12px;border-bottom:1px solid #f1f5f9;cursor:pointer;display:flex;justify-content:space-between;align-items:center;"
-                 onclick="applyQrValues('${escapeJsString(p.name)}', '${escapeJsString(p.idNumber)}', '${escapeJsString(p.mobile || '')}', '${escapeJsString(p.ageCode || '')}'); document.getElementById('idSuggestionsDropdown').style.display='none';">
-                <div>
-                    <div style="font-weight:600;font-size:0.875rem;color:#1e293b;">${escapeHtml(p.idNumber)}</div>
-                    <div style="font-size:0.75rem;color:#64748b;">Name: ${escapeHtml(p.name)} | Tel: ${escapeHtml(p.mobile || '-')}</div>
-                </div>
-                <span style="font-size:0.75rem;background:#dbeafe;color:#1d4ed8;padding:2px 6px;border-radius:4px;">${escapeHtml(p.ageCode || 'Code')}</span>
-            </div>
-        `).join('');
-        idDropdown.style.display = 'block';
-    });
-
-    document.addEventListener('click', function(e) {
-        if (!nameInput.contains(e.target) && !nameDropdown.contains(e.target)) {
-            nameDropdown.style.display = 'none';
-        }
-        if (!idInput.contains(e.target) && !idDropdown.contains(e.target)) {
-            idDropdown.style.display = 'none';
-        }
-    });
 }
 
 // ========== ENTRY FORM ==========
