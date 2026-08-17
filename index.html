@@ -1,0 +1,1748 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bin Mishal Travels - Cloud Sync</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+:root{--primary:#2563eb;--primary-dark:#1d4ed8;--primary-light:#dbeafe;--success:#059669;--success-light:#d1fae5;--danger:#dc2626;--danger-light:#fee2e2;--warning:#d97706;--warning-light:#fef3c7;--admin:#7c3aed;--admin-light:#ede9fe;--gray-50:#f9fafb;--gray-100:#f3f4f6;--gray-200:#e5e7eb;--gray-300:#d1d5db;--gray-400:#9ca3af;--gray-500:#6b7280;--gray-600:#4b5563;--gray-700:#374151;--gray-800:#1f2937;--gray-900:#111827;--shadow:0 1px 3px 0 rgba(0,0,0,0.1),0 1px 2px -1px rgba(0,0,0,0.1);--shadow-md:0 4px 6px -1px rgba(0,0,0,0.1),0 2px 4px -2px rgba(0,0,0,0.1);--shadow-lg:0 10px 15px -3px rgba(0,0,0,0.1),0 4px 6px -4px rgba(0,0,0,0.1);--radius:8px;--radius-lg:12px}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);min-height:100vh;color:var(--gray-800)}
+.login-screen{position:fixed;inset:0;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);display:flex;align-items:center;justify-content:center;z-index:5000;transition:opacity .5s ease,visibility .5s ease}
+.login-screen.hidden{opacity:0;visibility:hidden;pointer-events:none}
+.login-card{background:white;border-radius:var(--radius-lg);box-shadow:var(--shadow-lg);width:100%;max-width:420px;padding:40px 36px;animation:loginIn .5s ease}
+@keyframes loginIn{from{transform:translateY(30px);opacity:0}to{transform:translateY(0);opacity:1}}
+.login-logo{text-align:center;margin-bottom:32px}
+.login-logo i{font-size:3.5rem;color:var(--primary);margin-bottom:16px}
+.login-logo h1{font-size:1.75rem;font-weight:700;color:var(--gray-900)}
+.login-logo p{color:var(--gray-500);margin-top:6px;font-size:.9375rem}
+.login-form .form-group{margin-bottom:18px}
+.login-form label{display:block;font-size:.875rem;font-weight:500;color:var(--gray-700);margin-bottom:6px}
+.login-form .form-control{width:100%;padding:12px 14px;border:1.5px solid var(--gray-200);border-radius:var(--radius);font-size:.9375rem;font-family:inherit;transition:all .2s;background:var(--gray-50)}
+.login-form .form-control:focus{outline:none;border-color:var(--primary);background:white;box-shadow:0 0 0 3px var(--primary-light)}
+.login-form .btn-login{width:100%;padding:14px;background:linear-gradient(135deg,var(--primary) 0%,var(--primary-dark) 100%);color:white;border:none;border-radius:var(--radius);font-size:1rem;font-weight:600;font-family:inherit;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:8px;margin-top:8px;box-shadow:0 4px 6px -1px rgba(37,99,235,.3)}
+.login-form .btn-login:hover{transform:translateY(-1px);box-shadow:0 6px 12px -2px rgba(37,99,235,.4)}
+.login-footer{text-align:center;margin-top:24px;padding-top:20px;border-top:1px solid var(--gray-100);color:var(--gray-400);font-size:.8125rem}
+.app-container{max-width:1400px;margin:0 auto;padding:20px}
+.app-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:30px;color:white;flex-wrap:wrap;gap:12px}
+.app-header-left h1{font-size:2rem;font-weight:700;margin-bottom:4px;text-shadow:0 2px 4px rgba(0,0,0,.2)}
+.app-header-left p{font-size:1rem;opacity:.9;font-weight:300}
+.user-badge{display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.15);backdrop-filter:blur(10px);padding:8px 16px;border-radius:30px;font-size:.875rem;font-weight:500}
+.user-badge.admin{background:rgba(124,58,237,.25);border:1px solid rgba(124,58,237,.4)}
+.btn-logout{background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.3);color:white;padding:8px 16px;border-radius:30px;font-size:.875rem;font-weight:500;font-family:inherit;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:6px}
+.btn-logout:hover{background:rgba(255,255,255,.3)}
+.btn-admin-toggle{background:linear-gradient(135deg,var(--admin) 0%,#6d28d9 100%);border:none;color:white;padding:8px 16px;border-radius:30px;font-size:.875rem;font-weight:600;font-family:inherit;cursor:pointer;transition:all .2s;display:none;align-items:center;gap:6px;box-shadow:0 2px 6px rgba(124,58,237,.3)}
+.btn-admin-toggle.visible{display:flex}
+.btn-admin-toggle:hover{transform:translateY(-1px);box-shadow:0 4px 10px rgba(124,58,237,.4)}
+.sync-status{display:flex;align-items:center;gap:6px;padding:6px 14px;border-radius:20px;font-size:.8125rem;font-weight:500;background:rgba(255,255,255,.15);backdrop-filter:blur(10px);color:white}
+.sync-status.synced{color:#34d399}
+.sync-status.syncing{color:#fbbf24}
+.sync-status.error{color:#f87171}
+.sync-status.offline{color:#d1d5db}
+.btn-add-new{padding:12px 24px;background:linear-gradient(135deg,var(--success) 0%,#047857 100%);color:white;border:none;border-radius:var(--radius);font-size:1rem;font-weight:600;font-family:inherit;cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;gap:8px;box-shadow:0 4px 6px -1px rgba(5,150,105,.3)}
+.btn-add-new:hover{transform:translateY(-1px);box-shadow:0 6px 12px -2px rgba(5,150,105,.4)}
+.btn-add-new i{font-size:1.1rem}
+.add-new-bar{display:flex;justify-content:flex-end;margin-bottom:16px}
+.add-new-bar-bottom{display:flex;justify-content:center;margin-top:20px;padding-top:20px;border-top:1px solid var(--gray-200)}
+.modal-overlay-entry{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.55);display:none;align-items:center;justify-content:center;z-index:3000;padding:20px}
+.modal-overlay-entry.active{display:flex}
+.entry-modal{background:white;border-radius:var(--radius-lg);box-shadow:var(--shadow-lg);width:100%;max-width:520px;max-height:90vh;overflow-y:auto;animation:modalIn .3s ease;position:relative}
+@keyframes modalIn{from{transform:scale(.92);opacity:0}to{transform:scale(1);opacity:1}}
+.entry-modal-header{background:linear-gradient(135deg,var(--primary) 0%,var(--primary-dark) 100%);color:white;padding:20px 24px;display:flex;align-items:center;justify-content:space-between}
+.entry-modal-header h2{font-size:1.25rem;font-weight:600;display:flex;align-items:center;gap:10px}
+.entry-modal-header .btn-close-modal{background:none;border:none;color:white;font-size:1.25rem;cursor:pointer;padding:4px;width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:6px;transition:background .2s}
+.entry-modal-header .btn-close-modal:hover{background:rgba(255,255,255,.2)}
+.entry-modal-body{padding:24px}
+.invoice-display{background:linear-gradient(135deg,var(--primary-light) 0%,#c7d2fe 100%);border:2px dashed var(--primary);border-radius:var(--radius);padding:14px 18px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between}
+.invoice-display label{font-size:.875rem;font-weight:600;color:var(--primary-dark)}
+.invoice-display .invoice-number{font-size:1.25rem;font-weight:700;color:var(--primary);font-family:monospace;letter-spacing:1px}
+.invoice-display i{color:var(--primary)}
+.form-group{margin-bottom:16px}
+.form-group label{display:block;font-size:.875rem;font-weight:500;color:var(--gray-700);margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.form-group label i{color:var(--primary);font-size:.875rem;width:16px}
+.form-control{width:100%;padding:10px 14px;border:1.5px solid var(--gray-200);border-radius:var(--radius);font-size:.9375rem;font-family:inherit;transition:all .2s;background:var(--gray-50)}
+.form-control:focus{outline:none;border-color:var(--primary);background:white;box-shadow:0 0 0 3px var(--primary-light)}
+.form-control::placeholder{color:var(--gray-400)}
+.form-control[readonly]{background:var(--gray-100);color:var(--gray-500);cursor:not-allowed}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.btn-submit{width:100%;padding:14px;background:linear-gradient(135deg,var(--success) 0%,#047857 100%);color:white;border:none;border-radius:var(--radius);font-size:1rem;font-weight:600;font-family:inherit;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 4px 6px -1px rgba(5,150,105,.3)}
+.btn-submit:hover{transform:translateY(-1px);box-shadow:0 6px 12px -2px rgba(5,150,105,.4)}
+.btn-clear{width:100%;padding:10px;background:var(--gray-100);color:var(--gray-600);border:1.5px solid var(--gray-200);border-radius:var(--radius);font-size:.875rem;font-weight:500;font-family:inherit;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:6px;margin-top:10px}
+.btn-clear:hover{background:var(--gray-200);color:var(--gray-700)}
+.list-card{background:white;border-radius:var(--radius-lg);box-shadow:var(--shadow-lg);overflow:hidden}
+.list-card-header{background:linear-gradient(135deg,var(--gray-800) 0%,var(--gray-900) 100%);color:white;padding:20px 24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
+.list-card-header-left{display:flex;align-items:center;gap:12px}
+.list-card-header-left i{font-size:1.5rem;color:#60a5fa}
+.list-card-header h2{font-size:1.25rem;font-weight:600}
+.record-count{background:rgba(255,255,255,.15);padding:4px 12px;border-radius:20px;font-size:.875rem;font-weight:500}
+.list-toolbar{padding:16px 24px;background:var(--gray-50);border-bottom:1px solid var(--gray-200);display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+.search-box{position:relative;flex:1;min-width:200px}
+.search-box i{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--gray-400)}
+.search-box input{width:100%;padding:10px 14px 10px 38px;border:1.5px solid var(--gray-200);border-radius:var(--radius);font-size:.875rem;font-family:inherit;transition:all .2s}
+.search-box input:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-light)}
+.filter-select{padding:10px 14px;border:1.5px solid var(--gray-200);border-radius:var(--radius);font-size:.875rem;font-family:inherit;background:white;cursor:pointer;min-width:140px}
+.filter-select:focus{outline:none;border-color:var(--primary)}
+.btn-export{padding:10px 16px;background:white;color:var(--gray-700);border:1.5px solid var(--gray-200);border-radius:var(--radius);font-size:.875rem;font-weight:500;font-family:inherit;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:6px}
+.btn-export:hover{background:var(--gray-100);border-color:var(--gray-300)}
+.btn-delete-all{padding:10px 16px;background:var(--danger-light);color:var(--danger);border:1.5px solid #fecaca;border-radius:var(--radius);font-size:.875rem;font-weight:500;font-family:inherit;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:6px}
+.btn-delete-all:hover{background:var(--danger);color:white;border-color:var(--danger)}
+.table-wrapper{overflow-x:auto;max-height:600px;overflow-y:auto}
+table{width:100%;border-collapse:collapse;font-size:.875rem}
+thead{position:sticky;top:0;z-index:10}
+th{background:var(--gray-100);color:var(--gray-700);font-weight:600;text-align:left;padding:14px 16px;border-bottom:2px solid var(--gray-200);white-space:nowrap;cursor:pointer;user-select:none;transition:background .2s}
+th:hover{background:var(--gray-200)}
+th i{margin-left:4px;font-size:.75rem;color:var(--gray-400)}
+td{padding:12px 16px;border-bottom:1px solid var(--gray-100);color:var(--gray-700)}
+tbody tr{transition:background .15s}
+tbody tr:hover{background:var(--primary-light)}
+tbody tr:nth-child(even){background:var(--gray-50)}
+tbody tr:nth-child(even):hover{background:var(--primary-light)}
+.serial-cell{font-weight:700;color:var(--primary);width:50px;text-align:center}
+.time-cell{white-space:nowrap;color:var(--gray-500);font-size:.8125rem}
+.date-cell{white-space:nowrap;color:var(--gray-600);font-weight:500}
+.amount-cell{font-weight:600;color:var(--success);text-align:right}
+.invoice-cell{font-weight:600;color:var(--admin);font-family:monospace}
+.creator-cell{white-space:nowrap;font-size:.8125rem;color:var(--gray-500)}
+.actions-cell{width:80px;text-align:center}
+.btn-delete-row{background:none;border:none;color:var(--gray-400);cursor:pointer;padding:6px;border-radius:6px;transition:all .2s;font-size:1rem}
+.btn-delete-row:hover{background:var(--danger-light);color:var(--danger)}
+.empty-state{text-align:center;padding:60px 20px;color:var(--gray-400)}
+.empty-state i{font-size:3rem;margin-bottom:16px;opacity:.5}
+.empty-state h3{font-size:1.125rem;color:var(--gray-500);margin-bottom:6px}
+.admin-panel{display:none}
+.admin-panel.active{display:block}
+.admin-card{background:white;border-radius:var(--radius-lg);box-shadow:var(--shadow-lg);overflow:hidden;margin-bottom:24px}
+.admin-card-header{background:linear-gradient(135deg,var(--admin) 0%,#6d28d9 100%);color:white;padding:20px 24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
+.admin-card-header-left{display:flex;align-items:center;gap:12px}
+.admin-card-header-left i{font-size:1.5rem}
+.admin-card-header h2{font-size:1.25rem;font-weight:600}
+.admin-user-count{background:rgba(255,255,255,.2);padding:4px 14px;border-radius:20px;font-size:.875rem;font-weight:500}
+.admin-body{padding:24px}
+.admin-info-box{background:var(--admin-light);border:1px solid #ddd6fe;border-radius:var(--radius);padding:14px 18px;margin-bottom:20px;display:flex;align-items:center;gap:10px;color:var(--admin);font-size:.875rem}
+.admin-info-box i{font-size:1.1rem}
+.admin-form-grid{display:grid;grid-template-columns:1fr 1fr auto;gap:16px;align-items:end;margin-bottom:24px}
+@media(max-width:700px){.admin-form-grid{grid-template-columns:1fr}}
+.btn-add-user{padding:12px 24px;background:linear-gradient(135deg,var(--admin) 0%,#6d28d9 100%);color:white;border:none;border-radius:var(--radius);font-size:.9375rem;font-weight:600;font-family:inherit;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:8px;white-space:nowrap;box-shadow:0 4px 6px -1px rgba(124,58,237,.3)}
+.btn-add-user:hover{transform:translateY(-1px);box-shadow:0 6px 12px -2px rgba(124,58,237,.4)}
+.user-table th{background:var(--admin-light);color:var(--admin)}
+.badge-admin{background:var(--admin-light);color:var(--admin);padding:2px 10px;border-radius:20px;font-size:.75rem;font-weight:600}
+.badge-user{background:var(--primary-light);color:var(--primary);padding:2px 10px;border-radius:20px;font-size:.75rem;font-weight:600}
+.server-config{background:var(--admin-light);border:1px solid #ddd6fe;border-radius:var(--radius);padding:20px;margin-bottom:24px}
+.server-config h4{color:var(--admin);margin-bottom:12px;font-size:.9375rem;display:flex;align-items:center;gap:8px}
+.server-config .form-row{grid-template-columns:1fr auto;align-items:end}
+.server-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px;align-items:center}
+#lastSyncTime{color:var(--gray-500);font-size:.8125rem;display:flex;align-items:center;gap:6px}
+.toast-container{position:fixed;top:20px;right:20px;z-index:1000;display:flex;flex-direction:column;gap:10px}
+.toast{background:white;border-radius:var(--radius);box-shadow:var(--shadow-lg);padding:16px 20px;display:flex;align-items:center;gap:12px;min-width:300px;animation:slideIn .3s ease;border-left:4px solid var(--success)}
+.toast.error{border-left-color:var(--danger)}
+.toast.warning{border-left-color:var(--warning)}
+.toast-icon{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.toast.success .toast-icon{background:var(--success-light);color:var(--success)}
+.toast.error .toast-icon{background:var(--danger-light);color:var(--danger)}
+.toast.warning .toast-icon{background:var(--warning-light);color:var(--warning)}
+.toast-content{flex:1}
+.toast-title{font-weight:600;font-size:.9375rem;color:var(--gray-800)}
+.toast-message{font-size:.875rem;color:var(--gray-500);margin-top:2px}
+.toast-close{background:none;border:none;color:var(--gray-400);cursor:pointer;padding:4px;font-size:1rem;transition:color .2s}
+.toast-close:hover{color:var(--gray-600)}
+@keyframes slideIn{from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1}}
+@keyframes slideOut{from{transform:translateX(0);opacity:1}to{transform:translateX(100%);opacity:0}}
+.instructions-card{background:white;border-radius:var(--radius-lg);box-shadow:var(--shadow-lg);overflow:hidden;margin-top:24px}
+.instructions-header{background:linear-gradient(135deg,#f59e0b 0%,#d97706 100%);color:white;padding:16px 24px;display:flex;align-items:center;gap:10px}
+.instructions-header i{font-size:1.25rem}
+.instructions-header h3{font-size:1.1rem;font-weight:600}
+.instructions-body{padding:20px 24px}
+.instructions-body ol{padding-left:20px;color:var(--gray-600);font-size:.9375rem;line-height:1.8}
+.instructions-body li{margin-bottom:6px}
+.instructions-body strong{color:var(--gray-800)}
+.kbd{background:var(--gray-100);border:1px solid var(--gray-300);border-radius:4px;padding:2px 6px;font-family:monospace;font-size:.8rem;color:var(--gray-700)}
+.stats-bar{display:grid;grid-template-columns:repeat(6,1fr);gap:16px;margin-bottom:24px}
+@media(max-width:1200px){.stats-bar{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:700px){.stats-bar{grid-template-columns:repeat(2,1fr)}}
+.stat-card{background:white;border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);display:flex;align-items:center;gap:14px}
+.stat-icon{width:48px;height:48px;border-radius:var(--radius);display:flex;align-items:center;justify-content:center;font-size:1.25rem}
+.stat-icon.blue{background:var(--primary-light);color:var(--primary)}
+.stat-icon.green{background:var(--success-light);color:var(--success)}
+.stat-icon.purple{background:#ede9fe;color:#7c3aed}
+.stat-icon.orange{background:var(--warning-light);color:var(--warning)}
+.stat-icon.teal{background:#ccfbf1;color:#0d9488}
+.stat-icon.emerald{background:#dcfce7;color:#15803d}
+.stat-info h4{font-size:.75rem;font-weight:600;color:var(--gray-500);text-transform:uppercase;letter-spacing:.05em}
+.stat-info p{font-size:1.5rem;font-weight:700;color:var(--gray-800);margin-top:2px}
+.btn-print-header{background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.35);color:white;padding:6px 14px;border-radius:20px;font-size:.875rem;font-weight:600;font-family:inherit;cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;gap:6px}
+.btn-print-header:hover{background:rgba(255,255,255,.35);transform:translateY(-1px)}
+.modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center;z-index:2000}
+.modal-overlay.active{display:flex}
+.modal{background:white;border-radius:var(--radius-lg);padding:24px;max-width:400px;width:90%;box-shadow:var(--shadow-lg);animation:modalIn .2s ease}
+@keyframes modalIn{from{transform:scale(.95);opacity:0}to{transform:scale(1);opacity:1}}
+.modal h3{margin-bottom:12px;color:var(--gray-800)}
+.modal p{color:var(--gray-600);margin-bottom:20px;font-size:.9375rem}
+.modal-actions{display:flex;gap:10px;justify-content:flex-end}
+.modal-btn{padding:10px 20px;border-radius:var(--radius);font-family:inherit;font-size:.875rem;font-weight:500;cursor:pointer;border:none;transition:all .2s}
+.modal-btn-secondary{background:var(--gray-100);color:var(--gray-700)}
+.modal-btn-secondary:hover{background:var(--gray-200)}
+.modal-btn-danger{background:var(--danger);color:white}
+.modal-btn-danger:hover{background:#b91c1c}
+.admin-only{display:none}
+.admin-only.visible{display:inline-flex}
+::-webkit-scrollbar{width:8px;height:8px}
+::-webkit-scrollbar-track{background:var(--gray-100)}
+::-webkit-scrollbar-thumb{background:var(--gray-300);border-radius:4px}
+::-webkit-scrollbar-thumb:hover{background:var(--gray-400)}
+
+.date-filter-container{display:flex;align-items:center;gap:8px;background:white;padding:6px 12px;border:1.5px solid var(--gray-200);border-radius:var(--radius);flex-wrap:wrap}
+.date-filter-container label{font-size:.8125rem;font-weight:600;color:var(--gray-600);display:flex;align-items:center;gap:5px}
+.date-filter-input{border:1px solid var(--gray-300);border-radius:4px;padding:5px 8px;font-size:.8125rem;font-family:inherit;color:var(--gray-700);background:var(--gray-50);outline:none;transition:border-color .2s}
+.date-filter-input:focus{border-color:var(--primary);background:white}
+.date-quick-btn{padding:5px 10px;background:var(--gray-100);border:1px solid var(--gray-200);border-radius:4px;font-size:.75rem;font-weight:600;color:var(--gray-600);cursor:pointer;transition:all .2s;font-family:inherit}
+.date-quick-btn:hover{background:var(--primary-light);color:var(--primary);border-color:#bfdbfe}
+.btn-clear-date{background:none;border:none;color:var(--gray-400);cursor:pointer;padding:4px 6px;border-radius:4px;font-size:.875rem;transition:color .2s;display:inline-flex;align-items:center;justify-content:center}
+.btn-clear-date:hover{color:var(--danger)}
+
+@media print {
+  body {
+    background: #ffffff !important;
+    color: #111827 !important;
+    min-height: auto !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+  .login-screen,
+  .app-header,
+  .admin-panel,
+  .stats-bar,
+  .add-new-bar,
+  .add-new-bar-bottom,
+  .list-toolbar,
+  .instructions-card,
+  .modal-overlay,
+  .modal-overlay-entry,
+  .toast-container,
+  .btn-print-header,
+  .actions-cell,
+  #thAction,
+  .btn-delete-row {
+    display: none !important;
+  }
+  .app-container {
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 10px !important;
+  }
+  .list-card {
+    box-shadow: none !important;
+    border: 1px solid #d1d5db !important;
+    border-radius: 0 !important;
+    overflow: visible !important;
+  }
+  .list-card-header {
+    background: #1e293b !important;
+    color: #ffffff !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    padding: 12px 16px !important;
+  }
+  .table-wrapper {
+    max-height: none !important;
+    overflow: visible !important;
+  }
+  table {
+    font-size: 8.5pt !important;
+    width: 100% !important;
+    border-collapse: collapse !important;
+  }
+  th, td {
+    padding: 6px 8px !important;
+    border: 1px solid #e5e7eb !important;
+  }
+  th {
+    background-color: #f3f4f6 !important;
+    color: #111827 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  th i {
+    display: none !important;
+  }
+  tr {
+    page-break-inside: avoid !important;
+  }
+}
+</style>
+<base target="_blank">
+</head>
+<body>
+
+<div class="login-screen" id="loginScreen">
+<div class="login-card">
+<div class="login-logo">
+<i class="fas fa-shield-alt"></i>
+<h1>Bin Mishal Travels</h1>
+<p>Secure Login Required | Cloud Sync Enabled</p>
+</div>
+<form class="login-form" onsubmit="return false;">
+<div class="form-group">
+<label for="loginUser">Username / Email</label>
+<input type="text" class="form-control" id="loginUser" placeholder="Enter your username" autocomplete="username">
+</div>
+<div class="form-group">
+<label for="loginPass">Password</label>
+<input type="password" class="form-control" id="loginPass" placeholder="Enter your password" autocomplete="current-password">
+</div>
+<button type="button" class="btn-login" onclick="doLogin()">
+<i class="fas fa-sign-in-alt"></i> Sign In
+</button>
+</form>
+<div class="login-footer">
+<i class="fas fa-lock"></i> Protected Access | Admin & User Login
+<br><br>
+<button onclick="resetAllData()" style="background:none;border:none;color:var(--danger);cursor:pointer;font-size:.75rem;text-decoration:underline;">
+<i class="fas fa-redo"></i> Reset All Data (if login fails)
+</button>
+</div>
+</div>
+</div>
+
+<div class="app-container" id="appContainer" style="display:none;">
+<div class="app-header">
+<div class="app-header-left">
+<h1><i class="fas fa-plane-departure"></i> Bin Mishal Travels</h1>
+<p>Professional data entry and record management system</p>
+</div>
+<div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+<div class="sync-status offline" id="syncStatus" title="Cloud sync status">
+<i class="fas fa-wifi-slash"></i> <span id="syncText">Offline</span>
+</div>
+<div class="user-badge" id="userBadge">
+<i class="fas fa-user-circle"></i>
+<span id="loggedInUser">User</span>
+</div>
+<button class="btn-admin-toggle" id="btnAdminPanel" onclick="toggleAdminPanel()">
+<i class="fas fa-users-cog"></i> Admin Panel
+</button>
+<button class="btn-logout" onclick="doLogout()">
+<i class="fas fa-sign-out-alt"></i> Logout
+</button>
+</div>
+</div>
+
+<div class="admin-panel" id="adminPanel">
+<div class="admin-card">
+<div class="admin-card-header">
+<div class="admin-card-header-left">
+<i class="fas fa-users-cog"></i>
+<h2>Admin Panel - Manage Users</h2>
+</div>
+<span class="admin-user-count" id="adminUserCount">0 users</span>
+</div>
+<div class="admin-body">
+<div class="admin-info-box">
+<i class="fas fa-info-circle"></i>
+<span><strong>Only Admin</strong> can add or remove users. Regular users cannot access this panel.</span>
+</div>
+
+<div class="server-config">
+<h4><i class="fas fa-cloud"></i> Cloud Server Configuration (Google Sheets)</h4>
+<div class="form-row">
+<div class="form-group" style="margin-bottom:0">
+<label><i class="fas fa-link" style="color:var(--admin)"></i> Google Apps Script Web App URL</label>
+<input type="text" class="form-control" id="serverUrlInput" placeholder="https://script.google.com/macros/s/XXXXXXXX/exec">
+</div>
+<button class="btn-add-user" onclick="saveServerUrl()" style="height:fit-content;margin-bottom:0">
+<i class="fas fa-save"></i> Save URL
+</button>
+</div>
+<div class="server-actions">
+<button class="btn-export" onclick="loadFromServer(true)">
+<i class="fas fa-cloud-download-alt"></i> Load from Cloud
+</button>
+<button class="btn-export" onclick="syncToServer(true)">
+<i class="fas fa-cloud-upload-alt"></i> Force Sync Now
+</button>
+<span id="lastSyncTime"><i class="fas fa-clock"></i> Never synced</span>
+</div>
+
+<div style="margin-top:14px;padding:14px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;">
+<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
+<div>
+<h5 style="margin:0 0 4px 0;color:#166534;font-size:0.95rem;font-weight:700;"><i class="fas fa-cloud-upload-alt"></i> Save All Data Online (Google Sheets Setup)</h5>
+<p style="margin:0;color:#15803d;font-size:0.8rem;">1. Create a Google Sheet &gt; Extensions &gt; Apps Script. 2. Copy script code &gt; Paste &gt; Deploy as Web App (Anyone). 3. Paste URL above.</p>
+</div>
+<div style="display:flex;gap:8px;">
+<button type="button" onclick="copyAppsScriptCode()" style="background:#16a34a;color:#fff;border:none;padding:8px 14px;border-radius:6px;cursor:pointer;font-weight:600;font-size:0.8rem;display:flex;align-items:center;gap:6px;">
+<i class="fas fa-copy"></i> Copy Script Code
+</button>
+<button type="button" onclick="openScriptModal()" style="background:#fff;color:#16a34a;border:1px solid #16a34a;padding:8px 12px;border-radius:6px;cursor:pointer;font-weight:600;font-size:0.8rem;display:flex;align-items:center;gap:6px;">
+<i class="fas fa-code"></i> View Script
+</button>
+</div>
+</div>
+</div>
+</div>
+
+<div class="admin-form-grid">
+<div class="form-group" style="margin-bottom:0">
+<label><i class="fas fa-envelope" style="color:var(--admin)"></i> New User Email</label>
+<input type="email" class="form-control" id="newUserEmail" placeholder="user@example.com">
+</div>
+<div class="form-group" style="margin-bottom:0">
+<label><i class="fas fa-key" style="color:var(--admin)"></i> Password</label>
+<input type="text" class="form-control" id="newUserPass" placeholder="Set password">
+</div>
+<button class="btn-add-user" onclick="addUser()">
+<i class="fas fa-user-plus"></i> Add User
+</button>
+</div>
+<div class="table-wrapper" style="max-height:400px">
+<table class="user-table">
+<thead>
+<tr>
+<th style="width:50px">#</th>
+<th>Email / Username</th>
+<th>Password</th>
+<th>Role</th>
+<th style="text-align:center">Action</th>
+</tr>
+</thead>
+<tbody id="usersBody"></tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+
+<div id="entryApp">
+<div class="stats-bar">
+<div class="stat-card">
+<div class="stat-icon blue"><i class="fas fa-list-ol"></i></div>
+<div class="stat-info">
+<h4>Total Records</h4>
+<p id="stat-total">0</p>
+</div>
+</div>
+<div class="stat-card">
+<div class="stat-icon green"><i class="fas fa-dollar-sign"></i></div>
+<div class="stat-info">
+<h4>Total Amount</h4>
+<p id="stat-amount">$0.00</p>
+</div>
+</div>
+<div class="stat-card">
+<div class="stat-icon purple"><i class="fas fa-calendar-day"></i></div>
+<div class="stat-info">
+<h4>Today's Entries</h4>
+<p id="stat-today">0</p>
+</div>
+</div>
+<div class="stat-card">
+<div class="stat-icon emerald"><i class="fas fa-coins"></i></div>
+<div class="stat-info">
+<h4>Today's Amount</h4>
+<p id="stat-today-amount">$0.00</p>
+</div>
+</div>
+<div class="stat-card">
+<div class="stat-icon teal"><i class="fas fa-calendar-alt"></i></div>
+<div class="stat-info">
+<h4>This Month</h4>
+<p id="stat-month">0</p>
+</div>
+</div>
+<div class="stat-card">
+<div class="stat-icon orange"><i class="fas fa-user"></i></div>
+<div class="stat-info">
+<h4>Last Entry</h4>
+<p id="stat-last" style="font-size:1rem;margin-top:4px">-</p>
+</div>
+</div>
+</div>
+
+<div class="add-new-bar">
+<button class="btn-add-new" onclick="openEntryModal()">
+<i class="fas fa-plus-circle"></i> Add New Entry
+</button>
+</div>
+
+<div class="list-card">
+<div class="list-card-header">
+<div class="list-card-header-left">
+<i class="fas fa-table"></i>
+<h2>Records List</h2>
+</div>
+<div style="display:flex;align-items:center;gap:10px;">
+<button class="btn-print-header" onclick="printRecordsTable()" title="Print Records Table">
+<i class="fas fa-print"></i> Print
+</button>
+<span class="record-count" id="recordCount">0 records</span>
+</div>
+</div>
+<div class="list-toolbar">
+<div class="search-box">
+<i class="fas fa-search"></i>
+<input type="text" id="searchInput" placeholder="Search any data..." oninput="filterRecords()">
+</div>
+<select class="filter-select" id="filterColumn" onchange="filterRecords()">
+<option value="all">All Columns</option>
+<option value="name">Name</option>
+<option value="id">ID</option>
+<option value="mobile">Mobile</option>
+<option value="application">Application</option>
+<option value="invoice">Invoice</option>
+<option value="requestNo">Request No</option>
+<option value="creator">Entered By</option>
+</select>
+<div class="date-filter-container">
+<label for="filterStartDate"><i class="fas fa-calendar-alt" style="color:var(--primary)"></i> From:</label>
+<input type="date" id="filterStartDate" class="date-filter-input" onchange="onDateRangeChange()">
+<label for="filterEndDate">To:</label>
+<input type="date" id="filterEndDate" class="date-filter-input" onchange="onDateRangeChange()">
+<button type="button" class="btn-clear-date" id="btnClearDate" onclick="clearDateFilter()" title="Clear date filter" style="display:none;">
+<i class="fas fa-times"></i>
+</button>
+<button type="button" class="date-quick-btn" onclick="setQuickDateRange('today')">Today</button>
+<button type="button" class="date-quick-btn" onclick="setQuickDateRange('month')">This Month</button>
+<button type="button" class="date-quick-btn" onclick="setQuickDateRange('all')">All</button>
+</div>
+<button class="btn-export" onclick="exportToCSV()">
+<i class="fas fa-file-csv"></i> Export CSV
+</button>
+<button class="btn-delete-all admin-only" id="btnClearAll" onclick="confirmDeleteAll()">
+<i class="fas fa-trash-alt"></i> Clear All
+</button>
+</div>
+<div class="table-wrapper">
+<table id="recordsTable">
+<thead>
+<tr>
+<th onclick="sortTable(0)" style="text-align:center">S.No <i class="fas fa-sort"></i></th>
+<th onclick="sortTable(1)">Date <i class="fas fa-sort"></i></th>
+<th onclick="sortTable(2)">Time <i class="fas fa-sort"></i></th>
+<th onclick="sortTable(3)">Name <i class="fas fa-sort"></i></th>
+<th onclick="sortTable(4)">ID <i class="fas fa-sort"></i></th>
+<th onclick="sortTable(5)">Mobile <i class="fas fa-sort"></i></th>
+<th onclick="sortTable(6)">Application <i class="fas fa-sort"></i></th>
+<th onclick="sortTable(7)">Age/Code <i class="fas fa-sort"></i></th>
+<th onclick="sortTable(8)" style="text-align:right">Amount <i class="fas fa-sort"></i></th>
+<th onclick="sortTable(9)">Invoice <i class="fas fa-sort"></i></th>
+<th onclick="sortTable(10)">Request No <i class="fas fa-sort"></i></th>
+<th onclick="sortTable(11)">Entered By <i class="fas fa-sort"></i></th>
+<th style="text-align:center" class="admin-only" id="thAction">Action</th>
+</tr>
+</thead>
+<tbody id="recordsBody">
+<tr class="empty-row">
+<td colspan="13">
+<div class="empty-state">
+<i class="fas fa-inbox"></i>
+<h3>No records yet</h3>
+<p>Click "Add New Entry" to add your first record.</p>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+
+<div class="add-new-bar-bottom">
+<button class="btn-add-new" onclick="openEntryModal()">
+<i class="fas fa-plus-circle"></i> Add New Entry
+</button>
+</div>
+
+<div class="instructions-card">
+<div class="instructions-header">
+<i class="fas fa-info-circle"></i>
+<h3>Instructions & How to Use</h3>
+</div>
+<div class="instructions-body">
+<ol>
+<li><strong>Cloud Sync</strong> - Go to Admin Panel and paste your Google Apps Script URL to enable automatic cloud backup to Google Sheets.</li>
+<li><strong>Auto Save</strong> - Every entry automatically syncs to Google Sheets in the background. No manual backup needed.</li>
+<li><strong>Multi-User Safe</strong> - If multiple users add entries, data is merged automatically so nothing is lost.</li>
+<li><strong>Click Add New Entry</strong> - A popup form will open with auto-generated Invoice number.</li>
+<li><strong>Auto Invoice</strong> - Invoice number is automatically generated and increments with each new entry.</li>
+<li><strong>Auto Time & User</strong> - Every entry automatically saves the current time and the logged-in user's name.</li>
+<li><strong>Fill the Form</strong> - Enter Date, Name, ID, Mobile, Application, Age/Code, Amount, and Request Number.</li>
+<li><strong>Click Save Entry</strong> - The record is saved locally and synced to the cloud automatically.</li>
+<li><strong>Search & Filter</strong> - Use the search bar to find any data by Invoice, Request No, Name, ID, or who Entered it.</li>
+<li><strong>Sort Columns</strong> - Click any column header to sort records ascending or descending.</li>
+<li><strong>Export</strong> - Click <span class="kbd">Export CSV</span> to download all records.</li>
+<li><strong>Delete</strong> - <strong>Admin only:</strong> Can delete single records or clear all. Regular users cannot delete.</li>
+</ol>
+</div>
+</div>
+</div>
+</div>
+
+<div class="modal-overlay-entry" id="entryModalOverlay">
+<div class="entry-modal">
+<div class="entry-modal-header">
+<h2><i class="fas fa-edit"></i> New Entry</h2>
+<button class="btn-close-modal" onclick="closeEntryModal()" title="Close"><i class="fas fa-times"></i></button>
+</div>
+<div class="entry-modal-body">
+<div class="invoice-display">
+<div>
+<label><i class="fas fa-file-invoice"></i> Invoice Number</label>
+<div class="invoice-number" id="modalInvoiceDisplay">INV-0001</div>
+</div>
+<i class="fas fa-receipt" style="font-size:1.5rem;opacity:.5"></i>
+</div>
+<form id="entryForm" onsubmit="return false;">
+<div class="form-group">
+<label><i class="fas fa-calendar"></i> Date</label>
+<input type="date" class="form-control" id="fieldDate" required>
+</div>
+<div class="form-group">
+<label><i class="fas fa-user"></i> Name</label>
+<input type="text" class="form-control" id="fieldName" placeholder="Enter full name" required>
+</div>
+<div class="form-group">
+<label><i class="fas fa-id-card"></i> ID Number</label>
+<input type="text" class="form-control" id="fieldID" placeholder="Enter ID number" required>
+</div>
+<div class="form-group">
+<label><i class="fas fa-phone"></i> Mobile</label>
+<input type="tel" class="form-control" id="fieldMobile" placeholder="Enter mobile number" required>
+</div>
+<div class="form-group">
+<label><i class="fas fa-file-alt"></i> Application</label>
+<select class="form-control" id="fieldApplication" required>
+    <option value="" disabled selected>Select a service...</option>
+    <option value="Al raji account Opening">Al raji account Opening</option>
+    <option value="Apo-Attached">Apo-Attached</option>
+    <option value="Apostille">Apostille</option>
+    <option value="Arivel Card for Visit visa">Arivel Card for Visit visa</option>
+    <option value="BD Birth Certificate">BD Birth Certificate</option>
+    <option value="BMET Card">BMET Card</option>
+    <option value="BRAC Bank Account Opening (BD)">BRAC Bank Account Opening (BD)</option>
+    <option value="By Office">By Office</option>
+    <option value="CR">CR</option>
+    <option value="Chamber">Chamber</option>
+    <option value="Commercial Account Open (For Investors)">Commercial Account Open (For Investors)</option>
+    <option value="E-PASS-APPLY">E-PASS-APPLY</option>
+    <option value="EFA">EFA</option>
+    <option value="EX-Jub">EX-Jub</option>
+    <option value="EX/DMM Only">EX/DMM Only</option>
+    <option value="EXIT Application">EXIT Application</option>
+    <option value="Ex (After MOK)">Ex (After MOK)</option>
+    <option value="Ex-O.R">Ex-O.R</option>
+    <option value="Ex-R">Ex-R</option>
+    <option value="Ex/Dom.">Ex/Dom.</option>
+    <option value="Fine-Pay">Fine-Pay</option>
+    <option value="Finger For Umrah">Finger For Umrah</option>
+    <option value="Gosi solution">Gosi solution</option>
+    <option value="H/X">H/X</option>
+    <option value="Hotel Booking (Visit visa holder only)">Hotel Booking (Visit visa holder only)</option>
+    <option value="IBBL A/C">IBBL A/C</option>
+    <option value="IBBL Celfin">IBBL Celfin</option>
+    <option value="ID-Check">ID-Check</option>
+    <option value="IQ-Insurance">IQ-Insurance</option>
+    <option value="IQ-Medical">IQ-Medical</option>
+    <option value="IQM N Change">IQM N Change</option>
+    <option value="International D.L (For 01 Year)">International D.L (For 01 Year)</option>
+    <option value="International D.L (For 02 Years)">International D.L (For 02 Years)</option>
+    <option value="International D.L (For 03 Years)">International D.L (For 03 Years)</option>
+    <option value="Investor-Service">Investor-Service</option>
+    <option value="Investor-Trading">Investor-Trading</option>
+    <option value="JV (DOM)">JV (DOM)</option>
+    <option value="JV (Mowassasha)">JV (Mowassasha)</option>
+    <option value="JV (Sharriqa)">JV (Sharriqa)</option>
+    <option value="JV Processing">JV Processing</option>
+    <option value="JV-Aply">JV-Aply</option>
+    <option value="JV-Ex">JV-Ex</option>
+    <option value="JV-Renew (1st & 2nd)">JV-Renew (1st & 2nd)</option>
+    <option value="Lost I.C">Lost I.C</option>
+    <option value="M/Rx">M/Rx</option>
+    <option value="MLT">MLT</option>
+    <option value="MLT Correction">MLT Correction</option>
+    <option value="MLT-Hand">MLT-Hand</option>
+    <option value="MLT-JV">MLT-JV</option>
+    <option value="MLT-Lost">MLT-Lost</option>
+    <option value="MLT-Single">MLT-Single</option>
+    <option value="MOFA">MOFA</option>
+    <option value="Mamla Against kopil /Sponsor">Mamla Against kopil /Sponsor</option>
+    <option value="Mamla general">Mamla general</option>
+    <option value="Marriage Certificate (Kabin-BD)">Marriage Certificate (Kabin-BD)</option>
+    <option value="Mehana Change">Mehana Change</option>
+    <option value="Misa Renew">Misa Renew</option>
+    <option value="Misa update">Misa update</option>
+    <option value="Moassasah Close">Moassasah Close</option>
+    <option value="Moassasah Open">Moassasah Open</option>
+    <option value="Moassasah Transfer">Moassasah Transfer</option>
+    <option value="Mudad Update/Wage Protection">Mudad Update/Wage Protection</option>
+    <option value="NIC">NIC</option>
+    <option value="NIN">NIN</option>
+    <option value="Nafath Motlob">Nafath Motlob</option>
+    <option value="Nasat update (Without Gov Fee)">Nasat update (Without Gov Fee)</option>
+    <option value="Omra Exit">Omra Exit</option>
+    <option value="PIN">PIN</option>
+    <option value="PIN-PP EXP">PIN-PP EXP</option>
+    <option value="Police Clearance - Absher">Police Clearance - Absher</option>
+    <option value="Police Clearance- 10 Finger">Police Clearance- 10 Finger</option>
+    <option value="Print -MPT">Print -MPT</option>
+    <option value="Print- APT">Print- APT</option>
+    <option value="Print- BPT">Print- BPT</option>
+    <option value="Print- DPT">Print- DPT</option>
+    <option value="Print- DPT+APT (Together)">Print- DPT+APT (Together)</option>
+    <option value="Print- JPT">Print- JPT</option>
+    <option value="Print- MMP">Print- MMP</option>
+    <option value="Print-H.Date">Print-H.Date</option>
+    <option value="Qiwa (Company)">Qiwa (Company)</option>
+    <option value="Quata Balance (Issue)">Quata Balance (Issue)</option>
+    <option value="R/EX">R/EX</option>
+    <option value="SADDAT Fee">SADDAT Fee</option>
+    <option value="SBC Mowafaka">SBC Mowafaka</option>
+    <option value="Salama Licence">Salama Licence</option>
+    <option value="Saudi Employee add">Saudi Employee add</option>
+    <option value="Sponsor Contact">Sponsor Contact</option>
+    <option value="Sponsor Transfer">Sponsor Transfer</option>
+    <option value="Sponsor Transfer Request Solving (STRS)">Sponsor Transfer Request Solving (STRS)</option>
+    <option value="TP">TP</option>
+    <option value="Tourist Visa Processing -KUWAIT (Refundable)">Tourist Visa Processing -KUWAIT (Refundable)</option>
+    <option value="Tourist Visa Processing -MALAYSIA (Non-Refundable)">Tourist Visa Processing -MALAYSIA (Non-Refundable)</option>
+    <option value="Tourist Visa Processing -OMAN (Non-Refundable)">Tourist Visa Processing -OMAN (Non-Refundable)</option>
+    <option value="Tourist Visa Processing -QATAR (Refundable)">Tourist Visa Processing -QATAR (Refundable)</option>
+    <option value="Tourist Visa Processing -THAILAND (Non-Refundable)">Tourist Visa Processing -THAILAND (Non-Refundable)</option>
+    <option value="Travel Pass (Visit visa holder only)">Travel Pass (Visit visa holder only)</option>
+    <option value="Umrah 14Days">Umrah 14Days</option>
+    <option value="Umrah Family Package">Umrah Family Package</option>
+    <option value="VISA Tolob">VISA Tolob</option>
+    <option value="VISA Umrah Only">VISA Umrah Only</option>
+    <option value="VISA owakala (Amel Idi)">VISA owakala (Amel Idi)</option>
+    <option value="VISA owakala (Domestic)">VISA owakala (Domestic)</option>
+    <option value="Vacation/Chuti (Out of Saddat)">Vacation/Chuti (Out of Saddat)</option>
+    <option value="Vat Return fo Investors">Vat Return fo Investors</option>
+    <option value="Wafedin Jubail">Wafedin Jubail</option>
+</select>
+</div>
+<div class="form-row">
+<div class="form-group">
+<label><i class="fas fa-hashtag"></i> Age / Code</label>
+<input type="text" class="form-control" id="fieldAgeCode" placeholder="Age or Code" required>
+</div>
+<div class="form-group">
+<label><i class="fas fa-dollar-sign"></i> Amount</label>
+<input type="number" class="form-control" id="fieldAmount" placeholder="0.00" step="0.01" min="0" required>
+</div>
+</div>
+<div class="form-group">
+<label><i class="fas fa-barcode"></i> Request Number</label>
+<input type="text" class="form-control" id="fieldRequestNo" placeholder="Enter request number" required>
+</div>
+<button type="button" class="btn-submit" onclick="submitEntry()">
+<i class="fas fa-save"></i> Save Entry
+</button>
+<button type="button" class="btn-clear" onclick="clearForm()">
+<i class="fas fa-eraser"></i> Clear Form
+</button>
+</form>
+</div>
+</div>
+</div>
+
+<div class="toast-container" id="toastContainer"></div>
+
+<div class="modal-overlay" id="confirmModal">
+<div class="modal">
+<h3><i class="fas fa-exclamation-triangle" style="color:var(--warning)"></i> Confirm Deletion</h3>
+<p id="confirmMessage">Are you sure you want to delete all records? This action cannot be undone.</p>
+<div class="modal-actions">
+<button class="modal-btn modal-btn-secondary" onclick="closeModal()">Cancel</button>
+<button class="modal-btn modal-btn-danger" onclick="deleteAll()">Delete All</button>
+</div>
+</div>
+</div>
+
+<div class="modal-overlay" id="scriptModal">
+<div class="modal" style="max-width:650px;text-align:left;">
+<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+<h3 style="margin:0;color:var(--success);display:flex;align-items:center;gap:8px;"><i class="fas fa-code"></i> Google Apps Script Code</h3>
+<button type="button" class="btn-close-modal" onclick="closeScriptModal()" style="font-size:1.2rem;border:none;background:none;cursor:pointer;"><i class="fas fa-times"></i></button>
+</div>
+<p style="font-size:0.85rem;color:var(--gray-600);margin-bottom:10px;">Paste this code into <strong>Extensions &gt; Apps Script</strong> in your Google Sheet, then click <strong>Deploy &gt; New Deployment (Web app, Anyone)</strong>.</p>
+<pre id="scriptCodePre" style="background:#1e293b;color:#86efac;padding:12px;border-radius:8px;font-size:0.75rem;max-height:260px;overflow-y:auto;white-space:pre-wrap;"></pre>
+<div class="modal-actions" style="margin-top:14px;justify-content:flex-end;">
+<button class="modal-btn modal-btn-secondary" onclick="closeScriptModal()">Close</button>
+<button class="modal-btn" style="background:var(--success);color:#fff;" onclick="copyAppsScriptCode()"><i class="fas fa-copy"></i> Copy Code</button>
+</div>
+</div>
+</div>
+
+<script>
+
+// ========== CONFIG ==========
+const DEFAULT_ADMIN = { email: 'mrawalyt74@gmail.com', password: 'Aowal007', role: 'admin' };
+
+// ========== DATA ==========
+let users = [];
+let records = [];
+let sortDirection = {};
+let currentUser = null;
+let adminPanelOpen = false;
+let SERVER_URL = localStorage.getItem('er_server_url') || '';
+let syncTimeout = null;
+let autoSyncInterval = null;
+let isSyncing = false;
+
+// ========== LOCAL STORAGE (Fallback) ==========
+function saveUsersLocal() {
+    localStorage.setItem('er_users', JSON.stringify(users));
+}
+
+function saveRecordsLocal() {
+    localStorage.setItem('entryRecords', JSON.stringify(records));
+}
+
+function loadFromLocal() {
+    try {
+        const storedUsers = localStorage.getItem('er_users');
+        if (storedUsers) {
+            users = JSON.parse(storedUsers);
+            const hasAdmin = users.some(u => u.role === 'admin');
+            if (!hasAdmin) {
+                users.push({ ...DEFAULT_ADMIN });
+                saveUsersLocal();
+            }
+        } else {
+            users = [{ ...DEFAULT_ADMIN }];
+            saveUsersLocal();
+        }
+    } catch (e) {
+        console.error('Error loading users:', e);
+        users = [{ ...DEFAULT_ADMIN }];
+        saveUsersLocal();
+    }
+
+    try {
+        const storedRecords = localStorage.getItem('entryRecords');
+        if (storedRecords) {
+            records = JSON.parse(storedRecords);
+        } else {
+            records = [];
+        }
+    } catch (e) {
+        console.error('Error loading records:', e);
+        records = [];
+    }
+}
+
+// ========== SERVER SYNC ==========
+function setSyncStatus(status, message) {
+    const el = document.getElementById('syncStatus');
+    const txt = document.getElementById('syncText');
+    if (!el || !txt) return;
+
+    const icons = {
+        synced: 'fa-cloud',
+        syncing: 'fa-sync fa-spin',
+        error: 'fa-exclamation-triangle',
+        offline: 'fa-wifi-slash'
+    };
+    const texts = {
+        synced: 'Synced',
+        syncing: 'Syncing...',
+        error: 'Sync Error',
+        offline: 'Offline'
+    };
+
+    el.className = 'sync-status ' + status;
+    el.innerHTML = '<i class="fas ' + icons[status] + '"></i> <span id="syncText">' + (message || texts[status]) + '</span>';
+}
+
+function updateLastSyncTime() {
+    const el = document.getElementById('lastSyncTime');
+    if (el) {
+        const now = new Date().toLocaleString();
+        el.innerHTML = '<i class="fas fa-clock"></i> Last sync: ' + now;
+        localStorage.setItem('er_last_sync', now);
+    }
+}
+
+function restoreLastSyncTime() {
+    const el = document.getElementById('lastSyncTime');
+    const last = localStorage.getItem('er_last_sync');
+    if (el && last) {
+        el.innerHTML = '<i class="fas fa-clock"></i> Last sync: ' + last;
+    }
+}
+
+const APPS_SCRIPT_CODE = `function doGet(e) {
+  var action = (e && e.parameter && e.parameter.action) ? e.parameter.action : '';
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  
+  if (action === 'getUsers') {
+    var sheet = ss.getSheetByName('Users') || createUsersSheet(ss);
+    var data = sheet.getDataRange().getValues();
+    var users = [];
+    for (var i = 1; i < data.length; i++) {
+      if (data[i][0]) {
+        users.push({
+          email: String(data[i][0]),
+          password: String(data[i][1]),
+          role: String(data[i][2] || 'user')
+        });
+      }
+    }
+    return ContentService.createTextOutput(JSON.stringify(users))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+  
+  // Default: getRecords
+  var recSheet = ss.getSheetByName('Records') || createRecordsSheet(ss);
+  var recData = recSheet.getDataRange().getValues();
+  var records = [];
+  for (var j = 1; j < recData.length; j++) {
+    if (recData[j][0] !== '') {
+      records.push({
+        id: Number(recData[j][0]) || Date.now(),
+        serial: Number(recData[j][1]) || j,
+        date: String(recData[j][2]),
+        time: String(recData[j][3] || ''),
+        name: String(recData[j][4] || ''),
+        idNumber: String(recData[j][5] || ''),
+        mobile: String(recData[j][6] || ''),
+        application: String(recData[j][7] || ''),
+        ageCode: String(recData[j][8] || ''),
+        amount: Number(recData[j][9]) || 0,
+        invoice: String(recData[j][10] || ''),
+        requestNo: String(recData[j][11] || ''),
+        creator: String(recData[j][12] || ''),
+        timestamp: String(recData[j][13] || ''),
+        comment: String(recData[j][14] || '')
+      });
+    }
+  }
+  return ContentService.createTextOutput(JSON.stringify(records))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+
+function doPost(e) {
+  try {
+    var contents = JSON.parse(e.postData.contents);
+    var ss = SpreadsheetApp.getActiveSpreadsheet();
+    
+    if (contents.users && Array.isArray(contents.users)) {
+      var userSheet = ss.getSheetByName('Users') || createUsersSheet(ss);
+      userSheet.clearContents();
+      userSheet.appendRow(['Email', 'Password', 'Role']);
+      contents.users.forEach(function(u) {
+        userSheet.appendRow([u.email, u.password, u.role]);
+      });
+    }
+    
+    if (contents.records && Array.isArray(contents.records)) {
+      var recSheet = ss.getSheetByName('Records') || createRecordsSheet(ss);
+      recSheet.clearContents();
+      recSheet.appendRow(['ID', 'Serial', 'Date', 'Time', 'Name', 'ID Number', 'Mobile', 'Application', 'Age/Code', 'Amount', 'Invoice', 'Request No', 'Entered By', 'Timestamp', 'Comment']);
+      contents.records.forEach(function(r) {
+        recSheet.appendRow([
+          r.id, r.serial, r.date, r.time || '', r.name || '', r.idNumber || '',
+          r.mobile || '', r.application || '', r.ageCode || '', r.amount || 0,
+          r.invoice || '', r.requestNo || '', r.creator || '', r.timestamp || '', r.comment || ''
+        ]);
+      });
+    }
+    
+    return ContentService.createTextOutput(JSON.stringify({ success: true }))
+      .setMimeType(ContentService.MimeType.JSON);
+  } catch (err) {
+    return ContentService.createTextOutput(JSON.stringify({ success: false, error: err.toString() }))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+}
+
+function createUsersSheet(ss) {
+  var s = ss.insertSheet('Users');
+  s.appendRow(['Email', 'Password', 'Role']);
+  return s;
+}
+
+function createRecordsSheet(ss) {
+  var s = ss.insertSheet('Records');
+  s.appendRow(['ID', 'Serial', 'Date', 'Time', 'Name', 'ID Number', 'Mobile', 'Application', 'Age/Code', 'Amount', 'Invoice', 'Request No', 'Entered By', 'Timestamp', 'Comment']);
+  return s;
+}`;
+
+function copyAppsScriptCode() {
+    navigator.clipboard.writeText(APPS_SCRIPT_CODE).then(function() {
+        showToast('Apps Script code copied to clipboard!', 'success');
+    }).catch(function() {
+        const temp = document.createElement('textarea');
+        temp.value = APPS_SCRIPT_CODE;
+        document.body.appendChild(temp);
+        temp.select();
+        document.execCommand('copy');
+        document.body.removeChild(temp);
+        showToast('Apps Script code copied to clipboard!', 'success');
+    });
+}
+
+function openScriptModal() {
+    const pre = document.getElementById('scriptCodePre');
+    if (pre) pre.textContent = APPS_SCRIPT_CODE;
+    document.getElementById('scriptModal').classList.add('active');
+}
+
+function closeScriptModal() {
+    document.getElementById('scriptModal').classList.remove('active');
+}
+
+function saveServerUrl() {
+    const url = document.getElementById('serverUrlInput').value.trim();
+    if (!url) {
+        showToast('Please enter a valid Google Apps Script URL', 'error');
+        return;
+    }
+    if (!url.includes('script.google.com')) {
+        showToast('Please enter a valid Google Apps Script Web App URL', 'error');
+        return;
+    }
+    SERVER_URL = url;
+    localStorage.setItem('er_server_url', url);
+    showToast('Server URL saved! Testing connection...', 'success');
+    loadFromServer(true);
+}
+
+function loadServerUrl() {
+    const input = document.getElementById('serverUrlInput');
+    if (input && SERVER_URL) {
+        input.value = SERVER_URL;
+    }
+}
+
+async function syncToServer(force) {
+    if (!SERVER_URL) {
+        if (force) showToast('No server URL configured. Go to Admin Panel to set it up.', 'warning');
+        return;
+    }
+    if (isSyncing) return;
+
+    clearTimeout(syncTimeout);
+    syncTimeout = setTimeout(async () => {
+        await _doSync();
+    }, force ? 100 : 1200);
+}
+
+async function _doSync() {
+    if (!SERVER_URL || isSyncing) return;
+    isSyncing = true;
+    setSyncStatus('syncing');
+
+    try {
+        // First, fetch current server data to merge (prevents data loss from other users)
+        const [usersRes, recordsRes] = await Promise.all([
+            fetch(SERVER_URL + '?action=getUsers').catch(() => null),
+            fetch(SERVER_URL + '?action=getRecords').catch(() => null)
+        ]);
+
+        if (usersRes && recordsRes) {
+            const serverUsers = await usersRes.json();
+            const serverRecords = await recordsRes.json();
+
+            // Merge users (server wins on conflict, but keep local users not on server)
+            if (Array.isArray(serverUsers)) {
+                const serverEmails = new Set(serverUsers.map(u => u.email));
+                for (const lu of users) {
+                    if (!serverEmails.has(lu.email)) {
+                        serverUsers.push(lu);
+                    }
+                }
+                users = serverUsers;
+            }
+
+            // Merge records by id (keep all unique records from both sides)
+            if (Array.isArray(serverRecords)) {
+                const localIds = new Set(records.map(r => r.id));
+                for (const sr of serverRecords) {
+                    if (!localIds.has(sr.id)) {
+                        records.push(sr);
+                    }
+                }
+            }
+
+            saveUsersLocal();
+            saveRecordsLocal();
+        }
+
+        // Now push merged data to server
+        const payload = { action: 'syncAll', users: users, records: records };
+        const response = await fetch(SERVER_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+            setSyncStatus('synced');
+            updateLastSyncTime();
+            if (document.getElementById('appContainer').style.display !== 'none') {
+                renderTable();
+                updateStats();
+                if (sessionStorage.getItem('userRole') === 'admin') renderUsers();
+            }
+        } else {
+            setSyncStatus('error', result.error || 'Sync failed');
+        }
+    } catch (e) {
+        console.error('Sync error:', e);
+        setSyncStatus('error', 'Connection failed');
+    } finally {
+        isSyncing = false;
+    }
+}
+
+async function loadFromServer(force) {
+    if (!SERVER_URL) {
+        if (force) showToast('No server URL configured. Go to Admin Panel to set it up.', 'warning');
+        return false;
+    }
+
+    setSyncStatus('syncing', 'Loading...');
+    try {
+        const [usersRes, recordsRes] = await Promise.all([
+            fetch(SERVER_URL + '?action=getUsers'),
+            fetch(SERVER_URL + '?action=getRecords')
+        ]);
+
+        const serverUsers = await usersRes.json();
+        const serverRecords = await recordsRes.json();
+
+        if (Array.isArray(serverUsers) && serverUsers.length > 0) {
+            users = serverUsers;
+            saveUsersLocal();
+        }
+        if (Array.isArray(serverRecords)) {
+            records = serverRecords;
+            saveRecordsLocal();
+        }
+
+        setSyncStatus('synced');
+        updateLastSyncTime();
+        if (document.getElementById('appContainer').style.display !== 'none') {
+            renderTable();
+            updateStats();
+            if (sessionStorage.getItem('userRole') === 'admin') renderUsers();
+        }
+        if (force) showToast('Data loaded from cloud successfully!', 'success');
+        return true;
+    } catch (e) {
+        console.error('Load from server error:', e);
+        setSyncStatus('error', 'Load failed');
+        if (force) showToast('Failed to load from server. Using local data.', 'error');
+        return false;
+    }
+}
+
+function startAutoSync() {
+    if (autoSyncInterval) clearInterval(autoSyncInterval);
+    if (SERVER_URL) {
+        autoSyncInterval = setInterval(() => {
+            syncToServer(false);
+        }, 30000); // Auto-sync every 30 seconds
+    }
+}
+
+// ========== INIT ==========
+async function initData() {
+    loadServerUrl();
+
+    let serverLoaded = false;
+    if (SERVER_URL) {
+        serverLoaded = await loadFromServer(false);
+    }
+
+    if (!serverLoaded) {
+        loadFromLocal();
+    }
+
+    // Ensure admin always exists
+    if (!users.some(u => u.role === 'admin')) {
+        users.push({ ...DEFAULT_ADMIN });
+        saveUsersLocal();
+        syncToServer(false);
+    }
+
+    restoreLastSyncTime();
+    startAutoSync();
+}
+
+function resetAllData() {
+    if (confirm('Reset all data? This will restore the default admin account and clear all records.')) {
+        localStorage.removeItem('er_users');
+        localStorage.removeItem('entryRecords');
+        localStorage.removeItem('er_server_url');
+        localStorage.removeItem('er_last_sync');
+        sessionStorage.clear();
+        location.reload();
+    }
+}
+
+// ========== INVOICE NUMBER ==========
+function getNextInvoiceNumber() {
+    if (records.length === 0) return 'INV-0001';
+    let maxNum = 0;
+    for (let i = 0; i < records.length; i++) {
+        const inv = records[i].invoice || '';
+        const match = inv.match(/INV-(\d+)/);
+        if (match) {
+            const num = parseInt(match[1], 10);
+            if (num > maxNum) maxNum = num;
+        }
+    }
+    const next = maxNum + 1;
+    return 'INV-' + String(next).padStart(4, '0');
+}
+
+// ========== ENTRY MODAL ==========
+function openEntryModal() {
+    document.getElementById('fieldDate').valueAsDate = new Date();
+    document.getElementById('modalInvoiceDisplay').textContent = getNextInvoiceNumber();
+    document.getElementById('entryModalOverlay').classList.add('active');
+    document.getElementById('fieldName').focus();
+}
+
+function closeEntryModal() {
+    document.getElementById('entryModalOverlay').classList.remove('active');
+}
+
+document.getElementById('entryModalOverlay').addEventListener('click', function(e) {
+    if (e.target === this) closeEntryModal();
+});
+
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        closeEntryModal();
+        closeModal();
+    }
+});
+
+// ========== AUTH ==========
+function doLogin() {
+    const userInput = document.getElementById('loginUser').value.trim();
+    const passInput = document.getElementById('loginPass').value;
+
+    if (!userInput || !passInput) {
+        showToast('Please enter both username and password', 'error');
+        return;
+    }
+
+    const found = users.find(u => u.email === userInput && u.password === passInput);
+    if (found) {
+        currentUser = found;
+        sessionStorage.setItem('isLoggedIn', 'true');
+        sessionStorage.setItem('loggedInUser', found.email);
+        sessionStorage.setItem('userRole', found.role);
+        showApp();
+        showToast('Welcome back! Login successful.', 'success');
+    } else {
+        showToast('Invalid username or password. Please try again.', 'error');
+        document.getElementById('loginPass').value = '';
+        document.getElementById('loginPass').focus();
+    }
+}
+
+function doLogout() {
+    sessionStorage.removeItem('isLoggedIn');
+    sessionStorage.removeItem('loggedInUser');
+    sessionStorage.removeItem('userRole');
+    currentUser = null;
+    adminPanelOpen = false;
+    document.getElementById('loginScreen').classList.remove('hidden');
+    document.getElementById('appContainer').style.display = 'none';
+    document.getElementById('loginUser').value = '';
+    document.getElementById('loginPass').value = '';
+    document.getElementById('adminPanel').classList.remove('active');
+    document.getElementById('entryApp').style.display = 'block';
+    setSyncStatus('offline');
+    showToast('You have been logged out.', 'warning');
+}
+
+function showApp() {
+    document.getElementById('loginScreen').classList.add('hidden');
+    document.getElementById('appContainer').style.display = 'block';
+    const userEmail = sessionStorage.getItem('loggedInUser') || 'User';
+    const role = sessionStorage.getItem('userRole') || 'user';
+    const isAdmin = role === 'admin';
+    document.getElementById('loggedInUser').textContent = userEmail;
+
+    const badge = document.getElementById('userBadge');
+    const adminBtn = document.getElementById('btnAdminPanel');
+
+    const adminOnlyEls = document.querySelectorAll('.admin-only');
+    for (let i = 0; i < adminOnlyEls.length; i++) {
+        if (isAdmin) {
+            adminOnlyEls[i].classList.add('visible');
+        } else {
+            adminOnlyEls[i].classList.remove('visible');
+        }
+    }
+
+    if (isAdmin) {
+        badge.classList.add('admin');
+        badge.innerHTML = '<i class="fas fa-user-shield"></i><span>' + escapeHtml(userEmail) + '</span>';
+        adminBtn.classList.add('visible');
+        loadServerUrl();
+    } else {
+        badge.classList.remove('admin');
+        badge.innerHTML = '<i class="fas fa-user-circle"></i><span>' + escapeHtml(userEmail) + '</span>';
+        adminBtn.classList.remove('visible');
+        document.getElementById('adminPanel').classList.remove('active');
+        document.getElementById('entryApp').style.display = 'block';
+        adminPanelOpen = false;
+    }
+
+    renderTable();
+    updateStats();
+    if (isAdmin) renderUsers();
+
+    if (SERVER_URL) {
+        setSyncStatus('synced');
+    }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    initData().then(() => {
+        if (sessionStorage.getItem('isLoggedIn') === 'true') {
+            const email = sessionStorage.getItem('loggedInUser');
+            currentUser = users.find(u => u.email === email);
+            if (currentUser) {
+                showApp();
+            } else {
+                doLogout();
+            }
+        } else {
+            document.getElementById('loginScreen').classList.remove('hidden');
+            document.getElementById('appContainer').style.display = 'none';
+            document.getElementById('loginUser').focus();
+        }
+    });
+});
+
+document.getElementById('loginPass').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') doLogin();
+});
+document.getElementById('loginUser').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') document.getElementById('loginPass').focus();
+});
+
+// ========== ADMIN PANEL ==========
+function toggleAdminPanel() {
+    const role = sessionStorage.getItem('userRole');
+    if (role !== 'admin') {
+        showToast('Access denied. Admin only.', 'error');
+        return;
+    }
+    adminPanelOpen = !adminPanelOpen;
+    const panel = document.getElementById('adminPanel');
+    const entryApp = document.getElementById('entryApp');
+    const btn = document.getElementById('btnAdminPanel');
+
+    if (adminPanelOpen) {
+        panel.classList.add('active');
+        entryApp.style.display = 'none';
+        btn.innerHTML = '<i class="fas fa-arrow-left"></i> Back to App';
+        renderUsers();
+        loadServerUrl();
+        restoreLastSyncTime();
+    } else {
+        panel.classList.remove('active');
+        entryApp.style.display = 'block';
+        btn.innerHTML = '<i class="fas fa-users-cog"></i> Admin Panel';
+    }
+}
+
+function renderUsers() {
+    const tbody = document.getElementById('usersBody');
+    document.getElementById('adminUserCount').textContent = users.length + ' user' + (users.length !== 1 ? 's' : '');
+
+    if (users.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5"><div class="empty-state"><i class="fas fa-inbox"></i><h3>No users</h3></div></td></tr>';
+        return;
+    }
+
+    let html = '';
+    for (let i = 0; i < users.length; i++) {
+        const u = users[i];
+        html += '<tr>';
+        html += '<td style="text-align:center;font-weight:600;color:var(--admin)">' + (i + 1) + '</td>';
+        html += '<td>' + escapeHtml(u.email) + '</td>';
+        html += '<td><code style="background:var(--gray-100);padding:2px 8px;border-radius:4px;font-size:.8rem">' + escapeHtml(u.password) + '</code></td>';
+        if (u.role === 'admin') {
+            html += '<td><span class="badge-admin"><i class="fas fa-shield-alt"></i> Admin</span></td>';
+            html += '<td style="text-align:center"><span style="color:var(--gray-300)">-</span></td>';
+        } else {
+            html += '<td><span class="badge-user"><i class="fas fa-user"></i> User</span></td>';
+            html += '<td style="text-align:center"><button class="btn-delete-row" onclick="deleteUser(' + i + ')" title="Delete user"><i class="fas fa-trash-alt"></i></button></td>';
+        }
+        html += '</tr>';
+    }
+    tbody.innerHTML = html;
+}
+
+function addUser() {
+    const role = sessionStorage.getItem('userRole');
+    if (role !== 'admin') {
+        showToast('Access denied. Only admin can add users.', 'error');
+        return;
+    }
+    const email = document.getElementById('newUserEmail').value.trim();
+    const pass = document.getElementById('newUserPass').value.trim();
+
+    if (!email || !pass) {
+        showToast('Please enter both email and password', 'error');
+        return;
+    }
+    if (!email.includes('@')) {
+        showToast('Please enter a valid email address', 'error');
+        return;
+    }
+    if (users.find(u => u.email === email)) {
+        showToast('A user with this email already exists', 'error');
+        return;
+    }
+
+    users.push({ email: email, password: pass, role: 'user' });
+    saveUsersLocal();
+    syncToServer(false);
+    document.getElementById('newUserEmail').value = '';
+    document.getElementById('newUserPass').value = '';
+    renderUsers();
+    showToast('New user added successfully!', 'success');
+}
+
+function deleteUser(index) {
+    const role = sessionStorage.getItem('userRole');
+    if (role !== 'admin') {
+        showToast('Access denied. Only admin can remove users.', 'error');
+        return;
+    }
+    if (index < 0 || index >= users.length) return;
+    if (users[index].role === 'admin') {
+        showToast('Cannot delete admin account.', 'error');
+        return;
+    }
+    if (!confirm('Delete user "' + users[index].email + '"? This cannot be undone.')) return;
+    users.splice(index, 1);
+    saveUsersLocal();
+    syncToServer(false);
+    renderUsers();
+    showToast('User deleted', 'warning');
+}
+
+// ========== ENTRY FORM ==========
+function submitEntry() {
+    const requiredFields = ['fieldDate', 'fieldName', 'fieldID', 'fieldMobile', 'fieldApplication', 'fieldAgeCode', 'fieldAmount', 'fieldRequestNo'];
+    for (const id of requiredFields) {
+        const el = document.getElementById(id);
+        if (!el.value.trim()) {
+            el.focus();
+            showToast('Please fill in all required fields', 'error');
+            return;
+        }
+    }
+
+    const now = new Date();
+    const timeStr = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
+    const creator = sessionStorage.getItem('loggedInUser') || 'Unknown';
+
+    const record = {
+        id: Date.now(),
+        serial: records.length > 0 ? Math.max(...records.map(r => r.serial)) + 1 : 1,
+        date: document.getElementById('fieldDate').value,
+        time: timeStr,
+        name: document.getElementById('fieldName').value.trim(),
+        idNumber: document.getElementById('fieldID').value.trim(),
+        mobile: document.getElementById('fieldMobile').value.trim(),
+        application: document.getElementById('fieldApplication').value.trim(),
+        ageCode: document.getElementById('fieldAgeCode').value.trim(),
+        amount: parseFloat(document.getElementById('fieldAmount').value) || 0,
+        invoice: getNextInvoiceNumber(),
+        requestNo: document.getElementById('fieldRequestNo').value.trim(),
+        creator: creator,
+        timestamp: now.toISOString()
+    };
+
+    records.push(record);
+    saveRecordsLocal();
+    syncToServer(false);
+    renderTable();
+    updateStats();
+    clearFormFields();
+    closeEntryModal();
+    showToast('Entry Saved Successfully! Invoice: ' + record.invoice, 'success');
+}
+
+function clearFormFields() {
+    document.getElementById('fieldName').value = '';
+    document.getElementById('fieldID').value = '';
+    document.getElementById('fieldMobile').value = '';
+    document.getElementById('fieldApplication').value = '';
+    document.getElementById('fieldAgeCode').value = '';
+    document.getElementById('fieldAmount').value = '';
+    document.getElementById('fieldRequestNo').value = '';
+    document.getElementById('modalInvoiceDisplay').textContent = getNextInvoiceNumber();
+}
+
+function clearForm() {
+    if (confirm('Are you sure you want to clear the form?')) {
+        clearFormFields();
+        showToast('Form cleared', 'warning');
+    }
+}
+
+// ========== TABLE ==========
+let currentDisplayedRecords = [];
+
+function renderTable(data) {
+    if (data === undefined) data = records;
+    currentDisplayedRecords = data;
+    const tbody = document.getElementById('recordsBody');
+    const countEl = document.getElementById('recordCount');
+    const isAdmin = sessionStorage.getItem('userRole') === 'admin';
+    countEl.textContent = data.length + ' record' + (data.length !== 1 ? 's' : '');
+
+    if (data.length === 0) {
+        tbody.innerHTML = '<tr class="empty-row"><td colspan="' + (isAdmin ? '13' : '12') + '"><div class="empty-state"><i class="fas fa-inbox"></i><h3>No records found</h3><p>' + (records.length === 0 ? 'Click &quot;Add New Entry&quot; to add your first record.' : 'No records match your search criteria.') + '</p></div></td></tr>';
+        return;
+    }
+
+    let html = '';
+    for (let i = 0; i < data.length; i++) {
+        const r = data[i];
+        html += '<tr data-id="' + r.id + '">';
+        html += '<td class="serial-cell">' + r.serial + '</td>';
+        html += '<td class="date-cell">' + formatDate(r.date) + '</td>';
+        html += '<td class="time-cell">' + (r.time || '-') + '</td>';
+        html += '<td>' + escapeHtml(r.name) + '</td>';
+        html += '<td>' + escapeHtml(r.idNumber) + '</td>';
+        html += '<td>' + escapeHtml(r.mobile) + '</td>';
+        html += '<td>' + escapeHtml(r.application) + '</td>';
+        html += '<td>' + escapeHtml(r.ageCode) + '</td>';
+        html += '<td class="amount-cell">$' + r.amount.toFixed(2) + '</td>';
+        html += '<td class="invoice-cell">' + escapeHtml(r.invoice || '-') + '</td>';
+        html += '<td>' + escapeHtml(r.requestNo) + '</td>';
+        html += '<td class="creator-cell"><i class="fas fa-user" style="font-size:.7rem;margin-right:4px;color:var(--gray-400)"></i>' + escapeHtml(r.creator || '-') + '</td>';
+        if (isAdmin) {
+            html += '<td class="actions-cell"><button class="btn-delete-row" onclick="deleteRecord(' + r.id + ')" title="Delete record"><i class="fas fa-trash-alt"></i></button></td>';
+        }
+        html += '</tr>';
+    }
+    tbody.innerHTML = html;
+}
+
+function onDateRangeChange() {
+    const start = document.getElementById('filterStartDate') ? document.getElementById('filterStartDate').value : '';
+    const end = document.getElementById('filterEndDate') ? document.getElementById('filterEndDate').value : '';
+    const clearBtn = document.getElementById('btnClearDate');
+    if (clearBtn) {
+        clearBtn.style.display = (start || end) ? 'inline-flex' : 'none';
+    }
+    filterRecords();
+}
+
+function setQuickDateRange(type) {
+    const today = new Date().toISOString().slice(0, 10);
+    const startInput = document.getElementById('filterStartDate');
+    const endInput = document.getElementById('filterEndDate');
+    if (!startInput || !endInput) return;
+    if (type === 'today') {
+        startInput.value = today;
+        endInput.value = today;
+    } else if (type === 'month') {
+        const year = today.slice(0, 4);
+        const month = today.slice(5, 7);
+        startInput.value = year + '-' + month + '-01';
+        const lastDay = new Date(parseInt(year, 10), parseInt(month, 10), 0).getDate();
+        endInput.value = year + '-' + month + '-' + (lastDay < 10 ? '0' + lastDay : lastDay);
+    } else if (type === 'all') {
+        startInput.value = '';
+        endInput.value = '';
+    }
+    onDateRangeChange();
+}
+
+function clearDateFilter() {
+    const startInput = document.getElementById('filterStartDate');
+    const endInput = document.getElementById('filterEndDate');
+    if (startInput) startInput.value = '';
+    if (endInput) endInput.value = '';
+    onDateRangeChange();
+}
+
+function filterRecords() {
+    const query = document.getElementById('searchInput').value.toLowerCase().trim();
+    const column = document.getElementById('filterColumn').value;
+    const startDate = document.getElementById('filterStartDate') ? document.getElementById('filterStartDate').value : '';
+    const endDate = document.getElementById('filterEndDate') ? document.getElementById('filterEndDate').value : '';
+
+    const filtered = records.filter(function(r) {
+        if (startDate && r.date && r.date < startDate) return false;
+        if (endDate && r.date && r.date > endDate) return false;
+
+        if (!query) return true;
+
+        if (column === 'all') {
+            return Object.values(r).some(function(v) { return String(v).toLowerCase().includes(query); });
+        }
+        const map = {
+            name: r.name,
+            id: r.idNumber,
+            mobile: r.mobile,
+            application: r.application,
+            invoice: r.invoice,
+            requestNo: r.requestNo,
+            creator: r.creator
+        };
+        return String(map[column] || '').toLowerCase().includes(query);
+    });
+    renderTable(filtered);
+}
+
+function sortTable(colIndex) {
+    const keys = ['serial', 'date', 'time', 'name', 'idNumber', 'mobile', 'application', 'ageCode', 'amount', 'invoice', 'requestNo', 'creator'];
+    const key = keys[colIndex];
+    const dir = sortDirection[key] === 'asc' ? 'desc' : 'asc';
+    sortDirection = {}; sortDirection[key] = dir;
+
+    const sorted = [...records].sort(function(a, b) {
+        let va = a[key], vb = b[key];
+        if (typeof va === 'number' && typeof vb === 'number') {
+            return dir === 'asc' ? va - vb : vb - va;
+        }
+        va = String(va || '').toLowerCase(); vb = String(vb || '').toLowerCase();
+        if (va < vb) return dir === 'asc' ? -1 : 1;
+        if (va > vb) return dir === 'asc' ? 1 : -1;
+        return 0;
+    });
+    renderTable(sorted);
+}
+
+function deleteRecord(id) {
+    if (sessionStorage.getItem('userRole') !== 'admin') {
+        showToast('Access denied. Only admin can delete records.', 'error');
+        return;
+    }
+    if (!confirm('Delete this record?')) return;
+    records = records.filter(function(r) { return r.id !== id; });
+    saveRecordsLocal();
+    syncToServer(false);
+    renderTable();
+    updateStats();
+    showToast('Record deleted', 'warning');
+}
+
+function confirmDeleteAll() {
+    document.getElementById('confirmModal').classList.add('active');
+}
+
+function closeModal() {
+    document.getElementById('confirmModal').classList.remove('active');
+}
+
+function deleteAll() {
+    if (sessionStorage.getItem('userRole') !== 'admin') {
+        showToast('Access denied. Only admin can clear all records.', 'error');
+        closeModal();
+        return;
+    }
+    records = [];
+    saveRecordsLocal();
+    syncToServer(false);
+    renderTable();
+    updateStats();
+    closeModal();
+    showToast('All records cleared', 'warning');
+}
+
+function exportToCSV() {
+    const dataToExport = (currentDisplayedRecords && currentDisplayedRecords.length > 0) ? currentDisplayedRecords : records;
+    if (dataToExport.length === 0) { showToast('No records to export', 'error'); return; }
+    const headers = ['Serial', 'Date', 'Time', 'Name', 'ID', 'Mobile', 'Application', 'Age/Code', 'Amount', 'Invoice', 'Request Number', 'Entered By'];
+    const rows = dataToExport.map(function(r) {
+        return [r.serial, r.date, r.time || '', r.name, r.idNumber, r.mobile, r.application, r.ageCode, r.amount, r.invoice || '', r.requestNo, r.creator || ''];
+    });
+    const csv = [headers, ...rows].map(function(row) {
+        return row.map(function(cell) { return '"' + String(cell).replace(/"/g, '""') + '"'; }).join(',');
+    }).join('\n');
+
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = 'records_' + new Date().toISOString().slice(0, 10) + '.csv';
+    link.click();
+    showToast('CSV exported successfully', 'success');
+}
+
+function printRecordsTable() {
+    window.print();
+}
+
+function updateStats() {
+    document.getElementById('stat-total').textContent = records.length;
+    const totalAmount = records.reduce(function(sum, r) { return sum + (r.amount || 0); }, 0);
+    document.getElementById('stat-amount').textContent = '$' + totalAmount.toFixed(2);
+    const today = new Date().toISOString().slice(0, 10);
+    const todayRecords = records.filter(function(r) { return r.date === today; });
+    document.getElementById('stat-today').textContent = todayRecords.length;
+    const todayAmount = todayRecords.reduce(function(sum, r) { return sum + (r.amount || 0); }, 0);
+    const todayAmountEl = document.getElementById('stat-today-amount');
+    if (todayAmountEl) todayAmountEl.textContent = '$' + todayAmount.toFixed(2);
+    const currentMonthPrefix = today.slice(0, 7);
+    const monthCount = records.filter(function(r) { return r.date && r.date.startsWith(currentMonthPrefix); }).length;
+    const monthEl = document.getElementById('stat-month');
+    if (monthEl) monthEl.textContent = monthCount;
+    const last = records.length > 0 ? records[records.length - 1].name : '-';
+    document.getElementById('stat-last').textContent = last;
+}
+
+function formatDate(dateStr) {
+    if (!dateStr) return '';
+    const d = new Date(dateStr);
+    return d.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+}
+
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+function showToast(message, type) {
+    if (!type) type = 'success';
+    const container = document.getElementById('toastContainer');
+    const icons = { success: 'fa-check-circle', error: 'fa-times-circle', warning: 'fa-exclamation-circle' };
+    const titles = { success: 'Success', error: 'Error', warning: 'Notice' };
+
+    const toast = document.createElement('div');
+    toast.className = 'toast ' + type;
+    toast.innerHTML = '<div class="toast-icon"><i class="fas ' + icons[type] + '"></i></div><div class="toast-content"><div class="toast-title">' + titles[type] + '</div><div class="toast-message">' + message + '</div></div><button class="toast-close" onclick="this.parentElement.remove()"><i class="fas fa-times"></i></button>';
+    container.appendChild(toast);
+    setTimeout(function() {
+        toast.style.animation = 'slideOut .3s ease forwards';
+        setTimeout(function() { toast.remove(); }, 300);
+    }, 3000);
+}
+
+document.getElementById('confirmModal').addEventListener('click', function(e) {
+    if (e.target === this) closeModal();
+});
+
+document.getElementById('entryForm').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter' && e.target.tagName !== 'BUTTON') {
+        e.preventDefault();
+        submitEntry();
+    }
+});
+
+document.getElementById('newUserPass').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') addUser();
+});
+</script>
+</body>
+</html>

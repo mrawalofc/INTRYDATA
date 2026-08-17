@@ -1,0 +1,8 @@
+{
+  "name": "Bin Mishal Travels",
+  "description": "Professional entry recording and invoice management system for Bin Mishal Travels",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
